@@ -36,10 +36,10 @@ function eyebrow(s,t,o){ txt(s,t,Object.assign({fontSize:10.5,bold:true,color:MU
 function dArrow(s,x,y,h){ s.addShape(pres.ShapeType.downArrow,{x:x,y:y,w:0.24,h:h,fill:{color:"C2CFD3"},line:{color:"C2CFD3",width:0}}); }
 function rArrow(s,x,y,w){ s.addShape(pres.ShapeType.rightArrow,{x:x,y:y,w:w,h:0.24,fill:{color:"C2CFD3"},line:{color:"C2CFD3",width:0}}); }
 
-function chartBox(s,o){                       // グレー点線＝グラフを貼る
+function chartBox(s,o){                       // グレー点線＝図版を貼る
   s.addShape(pres.ShapeType.roundRect,{x:o.x,y:o.y,w:o.w,h:o.h,rectRadius:0.05,
-    fill:{color:PANEL},line:{color:"BFCCD1",width:1.25,dashType:"dash"}});
-  txt(s,"グラフ貼付エリア",{x:o.x,y:o.y+o.h/2-0.42,w:o.w,h:0.32,align:"center",fontSize:13,bold:true,color:PRI});
+    fill:{color:o.tint||PANEL},line:{color:o.border||"BFCCD1",width:1.25,dashType:"dash"}});
+  txt(s,o.label||"グラフ貼付エリア",{x:o.x,y:o.y+o.h/2-0.42,w:o.w,h:0.32,align:"center",fontSize:13,bold:true,color:PRI});
   txt(s,o.sub,{x:o.x+0.3,y:o.y+o.h/2-0.04,w:o.w-0.6,h:0.75,align:"center",fontSize:11,color:MUTED,lineSpacing:17});
 }
 function blank(s,o){                          // オレンジ点線＝本人が書く
@@ -136,8 +136,8 @@ function band(s,o){
     {x:M+0.45,y:2.68,w:W-0.9,h:0.6,fontSize:19,bold:true,color:PRI});
 
   const cw=(W-0.5)/2, cy=4.05, ch=1.75;
-  [["比 べ 方","同じ4〜6月どうしを比べ、時期による取引量の差を避ける"],
-   ["見 る 対 象","IBの件数に加え、ATMでの「IBでも代替できる取引」も合わせて見る"]
+  [["比 べ 方","同じ4〜6月どうしを比べ、\n時期による取引量の差を避ける"],
+   ["見 る 対 象","IBの件数に加え、\nATM側の「IBでも代替できる取引」も見る"]
   ].forEach((c,i)=>{
     const x=M+i*(cw+0.5);
     card(s,{x:x,y:cy,w:cw,h:ch});
@@ -179,9 +179,30 @@ function band(s,o){
   s.addNotes("使ったデータは、2025年と2026年の4月・5月・6月です。\n元になったのは取引履歴（流動）で、そこから入出金テーブルを作成し、DYNATREKで条件を指定して集計できる形にしました。\n取引履歴そのままでは項目が多く、目的のデータを追いにくい。逆に、一度この形にしてしまえば、以降は条件を指定するだけでいろいろな角度から見られるようになります。");
 }
 
-/* ============ 05 結果① ============ */
+/* ============ 05 分析方法 ============ */
 {
-  const s = slide(5,"結 果 ①","IBの利用件数は増加していた",
+  const s = slide(5,"分 析 方 法","条件を指定して必要な集計を取り出す",
+    "作成した入出金テーブルに対し、画面上で条件を指定するだけで集計結果が得られる");
+
+  const fw=5.50, fy=2.05, fh=3.20, fx1=M, fx2=SW-M-fw;
+  chartBox(s,{x:fx1,y:fy,w:fw,h:fh,label:"スクリーンショット ①",
+    sub:"DYNATREKの条件設定画面\n（期間・チャネル・取引種別などを指定）"});
+  chartBox(s,{x:fx2,y:fy,w:fw,h:fh,label:"スクリーンショット ②",
+    sub:"指定した条件で出力された集計結果",tint:PRIL,border:"A8C7CC"});
+  s.addShape(pres.ShapeType.rightArrow,{x:6.34,y:fy+fh/2-0.20,w:0.65,h:0.40,
+    fill:{color:PRI},line:{color:PRI,width:0}});
+  txt(s,"条件を指定する",{x:fx1,y:fy+fh+0.16,w:fw,h:0.30,align:"center",fontSize:13,bold:true,color:INK});
+  txt(s,"そのまま集計結果が出る",{x:fx2,y:fy+fh+0.16,w:fw,h:0.30,align:"center",fontSize:13,bold:true,color:PRI});
+
+  band(s,{y:5.95,h:0.62,fill:PANEL,color:INK,
+    text:"一度テーブルを整えれば、条件を変えるだけで別の切り口でも確認できる"});
+
+  s.addNotes("実際の画面です。左で、期間やチャネル、取引の種類といった条件を指定します。すると右のように、その条件で集計された結果がそのまま出てきます。\nここは長く説明しません。お伝えしたいのは、一度テーブルを整えてしまえば、あとは条件を変えるだけで別の切り口でも確認できる、という点です。この後の分析は、すべてこの繰り返しになります。\n\n【作成時】スクリーンショット②が結果スライドのグラフと同じものになる場合は、②には集計表など別の出力を貼るか、②を小さめに配置して重複感を避ける。");
+}
+
+/* ============ 06 結果① ============ */
+{
+  const s = slide(6,"結 果 ①","IBの利用件数は増加していた",
     "まず、IBで行われた取引の件数を2つの期間で比較");
 
   chartBox(s,{x:LX,y:2.05,w:LW,h:3.5,sub:"IBの利用件数（2025年4〜6月 / 2026年4〜6月）"});
@@ -197,9 +218,9 @@ function band(s,o){
   s.addNotes("まずIBの利用件数です。2025年の4〜6月と、2026年の4〜6月を比べました。\n（記入した数値を読み上げる）\n1年間で件数は増えています。月別に見ても同じ傾向です。\nただ、これだけでIBが広がったと言い切ることはできません。取引そのものが増えただけ、という可能性が残るからです。そこで、もうひとつの見方を足しました。");
 }
 
-/* ============ 06 結果② ============ */
+/* ============ 07 結果② ============ */
 {
-  const s = slide(6,"結 果 ②","ATMでIBに代替できる取引は減少していた",
+  const s = slide(7,"結 果 ②","ATMでIBに代替できる取引は減少していた",
     "IBへ移っているのかどうかを判断するため、ATM側の同種の取引も確認");
 
   chartBox(s,{x:LX,y:2.05,w:LW,h:3.5,sub:"ATMでのIB代替可能な取引の件数（2025年4〜6月 / 2026年4〜6月）"});
@@ -217,9 +238,9 @@ function band(s,o){
   s.addNotes("IBでも同じことができる取引──振込や振替など──に絞って、ATM側の件数を見ました。\n（記入した数値を読み上げる）\nこちらは減っています。IBが増え、ATM側が減っている。つまり、同じ取引がIBへ移りつつあると読めます。\n片方だけを見ていたら「増えた」で終わっていましたが、比べる相手を置いたことで、一歩踏み込んだ言い方ができるようになりました。\n\n※「IBでも行える取引」に何を含めたかは質疑で聞かれやすいので、口頭でも一度言っておく。");
 }
 
-/* ============ 07 考察 ============ */
+/* ============ 08 考察 ============ */
 {
-  const s = slide(7,"考 察","どの年代で利用が広がったのか",
+  const s = slide(8,"考 察","どの年代で利用が広がったのか",
     "全体の動きが分かった次に知りたくなるのは「誰が使うようになったのか」。今回は年代を5つに分けて確認");
 
   const gw=2.18, gp=0.25;
@@ -250,9 +271,9 @@ function band(s,o){
   s.addNotes("IBへ移りつつあることが分かると、次に知りたくなるのは「では、誰が使うようになったのか」です。これも同じテーブルに年代の条件を足すだけで確認できました。\n年代は5つに分けています。未成年、若手成人、働き手①、働き手②、高齢者です。\n（読み取りを説明する）\nここまで分かると、伸びていない年代にどう案内するか、といった具体的な打ち手の話ができるようになります。\n\n【作成時】打ち手の2行は、実際の読み取りに合わせて書き換えること。");
 }
 
-/* ============ 08 まとめ ============ */
+/* ============ 09 まとめ ============ */
 {
-  const s = slide(8,"ま と め","データを次の一手につなげるまで",
+  const s = slide(9,"ま と め","データを次の一手につなげるまで",
     "今回のワークで行ったことを、ひとつの流れにまとめる");
 
   const cw=2.11, gp=0.34, cy=2.15, ch=2.45;

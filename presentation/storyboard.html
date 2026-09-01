@@ -1,0 +1,550 @@
+<title>問いと確認の13枚</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --ground:#EDF0EE;
+    --surface:#FCFDFC;
+    --surface-2:#F4F6F4;
+    --ink:#141A1C;
+    --ink-2:#3E4A4C;
+    --ink-3:#6C7A7B;
+    --rule:#D2D9D6;
+    --rule-soft:#E2E7E4;
+    --ask:#B0591A;
+    --ask-soft:#F6EBE0;
+    --check:#15616D;
+    --check-soft:#E1EEEF;
+    --shadow:0 1px 2px rgba(20,26,28,.05), 0 8px 24px -16px rgba(20,26,28,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#101517;
+      --surface:#181F21;
+      --surface-2:#1E2628;
+      --ink:#E7ECEA;
+      --ink-2:#B3BEBD;
+      --ink-3:#869596;
+      --rule:#2C3639;
+      --rule-soft:#232C2E;
+      --ask:#E09250;
+      --ask-soft:#2A2119;
+      --check:#5FB6BC;
+      --check-soft:#152A2D;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#101517;
+    --surface:#181F21;
+    --surface-2:#1E2628;
+    --ink:#E7ECEA;
+    --ink-2:#B3BEBD;
+    --ink-3:#869596;
+    --rule:#2C3639;
+    --rule-soft:#232C2E;
+    --ask:#E09250;
+    --ask-soft:#2A2119;
+    --check:#5FB6BC;
+    --check-soft:#152A2D;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:940px;margin:0 auto;padding:0 24px 96px}
+
+  /* ---------- header ---------- */
+  header.top{padding:64px 0 40px;border-bottom:1px solid var(--rule)}
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:18px;
+  }
+  h1{
+    font-family:"Zen Old Mincho","Yu Mincho",serif;
+    font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.35;
+    margin:0 0 20px;text-wrap:balance;letter-spacing:.01em;
+  }
+  .thesis{
+    font-size:16px;color:var(--ink-2);max-width:60ch;margin:0;
+  }
+  .thesis b{color:var(--ink);font-weight:700}
+  .meta{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.08em;
+  }
+  .meta span{
+    border:1px solid var(--rule);border-radius:2px;padding:4px 10px;color:var(--ink-3);
+    background:var(--surface);
+  }
+
+  /* ---------- sections ---------- */
+  section{padding-top:56px}
+  h2{
+    font-family:"Zen Old Mincho","Yu Mincho",serif;
+    font-weight:600;font-size:22px;margin:0 0 8px;letter-spacing:.02em;
+  }
+  .sec-note{color:var(--ink-3);font-size:13px;margin:0 0 28px;max-width:62ch}
+
+  /* ---------- arc diagram ---------- */
+  .arc{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch;
+  }
+  .loop{
+    background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    padding:16px 16px 14px;box-shadow:var(--shadow);position:relative;
+  }
+  .loop .n{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+    color:var(--ink-3);margin-bottom:10px;
+  }
+  .loop .q{
+    font-size:14px;font-weight:700;line-height:1.6;color:var(--ask);
+    padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed var(--rule);
+  }
+  .loop .a{font-size:13px;color:var(--ink-2);line-height:1.7}
+  .loop .a strong{color:var(--check);font-weight:700}
+  .arc-foot{
+    margin-top:14px;padding:12px 16px;border:1px dashed var(--rule);border-radius:3px;
+    font-size:13px;color:var(--ink-2);background:var(--surface-2);
+  }
+  .arc-foot b{color:var(--ink);font-weight:700}
+  @media (max-width:720px){.arc{grid-template-columns:1fr}}
+
+  /* ---------- slide cards ---------- */
+  .card{
+    background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .card > .head{
+    display:grid;grid-template-columns:auto auto 1fr;gap:14px;align-items:baseline;
+    padding:18px 22px 14px;border-bottom:1px solid var(--rule-soft);
+  }
+  .num{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;font-size:13px;
+    color:var(--ink-3);font-variant-numeric:tabular-nums;
+  }
+  .chip{
+    font-size:11px;font-weight:700;letter-spacing:.06em;padding:2px 9px;border-radius:2px;
+    white-space:nowrap;
+    background:var(--surface-2);color:var(--ink-3);border:1px solid var(--rule);
+  }
+  .chip.ask{background:var(--ask-soft);color:var(--ask);border-color:transparent}
+  .chip.check{background:var(--check-soft);color:var(--check);border-color:transparent}
+  .card h3{
+    font-family:"Zen Old Mincho","Yu Mincho",serif;
+    font-weight:600;font-size:19px;line-height:1.5;margin:0;text-wrap:balance;
+  }
+  .lead{
+    padding:14px 22px;background:var(--surface-2);border-bottom:1px solid var(--rule-soft);
+    font-size:14px;color:var(--ink-2);
+  }
+  .lead::before{
+    content:"リード文";display:block;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+    color:var(--ink-3);margin-bottom:4px;
+  }
+  .body{padding:20px 22px 22px;display:grid;gap:20px}
+  .blk > .lbl{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+    color:var(--ink-3);margin-bottom:8px;display:flex;align-items:center;gap:8px;
+  }
+  .blk > .lbl::after{content:"";flex:1;height:1px;background:var(--rule-soft)}
+  .blk ul{margin:0;padding-left:1.15em;display:grid;gap:5px}
+  .blk li{font-size:14px;line-height:1.75}
+  .blk p{margin:0;font-size:14px;line-height:1.8}
+  .talk{
+    border-left:2px solid var(--rule);padding-left:14px;color:var(--ink-2);
+    font-size:13.5px;line-height:1.85;
+  }
+  .talk .say{color:var(--ink);}
+  .visual{
+    background:var(--surface-2);border:1px solid var(--rule-soft);border-radius:3px;
+    padding:14px 16px;font-size:13.5px;line-height:1.8;
+  }
+  .visual ul{padding-left:1.1em}
+  .ph{
+    color:var(--ask);font-weight:700;
+    border-bottom:1px dashed var(--ask);
+  }
+  .shot{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;
+    background:var(--ask-soft);color:var(--ask);padding:2px 8px;border-radius:2px;margin-bottom:8px;
+  }
+
+  /* ---------- connector ---------- */
+  .link{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;
+    padding:14px 22px 14px 24px;margin:0 0 0 0;
+  }
+  .link .arrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink-3);font-size:14px;line-height:1.6;
+  }
+  .link p{margin:0;font-size:13px;color:var(--ink-2);line-height:1.7;max-width:62ch}
+  .link .tag{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+    color:var(--ink-3);display:block;margin-bottom:3px;
+  }
+  .link.beat p{color:var(--ask);font-weight:500}
+
+  .deck{display:grid;gap:0}
+
+  /* ---------- notes ---------- */
+  .notes{display:grid;gap:12px}
+  .note{
+    background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--check);
+    border-radius:3px;padding:14px 18px;
+  }
+  .note.warn{border-left-color:var(--ask)}
+  .note h4{
+    margin:0 0 6px;font-size:14px;font-weight:700;
+  }
+  .note p, .note ul{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.8}
+  .note ul{padding-left:1.15em;display:grid;gap:4px}
+  .note a{color:var(--check);text-decoration:underline;text-underline-offset:2px}
+  .note a:focus-visible{outline:2px solid var(--ask);outline-offset:2px}
+
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+  th,td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  th{font-size:11px;letter-spacing:.1em;color:var(--ink-3);font-weight:600;background:var(--surface-2);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.t{font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+  footer{
+    margin-top:64px;padding-top:24px;border-top:1px solid var(--rule);
+    font-size:12px;color:var(--ink-3);
+  }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">成果発表 ／ 実際のテーマ内容パート</div>
+  <h1>問いと確認の13枚</h1>
+  <p class="thesis">この13枚が伝えるのは分析結果ではなく、<b>「業務で疑問が浮かんでから、データで確かめるまでの距離が短くなる」</b>という一点です。あいち銀行のIB普及分析は、その距離の短さを見せるための一例として置いています。</p>
+  <div class="meta">
+    <span>13 SLIDES</span>
+    <span>10分想定</span>
+    <span>聞き手 = DYNATREK未経験</span>
+    <span>後続に「学び・課題」パートあり</span>
+  </div>
+</header>
+
+<section>
+  <h2>発表全体のストーリー</h2>
+  <p class="sec-note">骨格は「問い → 確認 → そこから生まれる新しい問い → 確認」の3往復です。この往復が繰り返されること自体がメッセージなので、スライド順もこの形をそのままなぞります。</p>
+  <div class="arc">
+    <div class="loop">
+      <div class="n">LOOP 1 ／ SLIDE 5-8</div>
+      <div class="q">IBの利用は、本当に<br>広がっているのか？</div>
+      <div class="a"><strong>確認①</strong>　IBの利用件数を2期間で比較 → 増えていた</div>
+    </div>
+    <div class="loop">
+      <div class="n">LOOP 2 ／ SLIDE 9-11</div>
+      <div class="q">増えたのは分かった。<br>でも「置き換わった」のか？</div>
+      <div class="a"><strong>確認②</strong>　ATMのうちIBでも可能な取引（振込・振替など）を比較 → 減っていた</div>
+    </div>
+    <div class="loop">
+      <div class="n">LOOP 3 ／ SLIDE 12</div>
+      <div class="q">では、どの年代で<br>進んでいるのか？</div>
+      <div class="a"><strong>確認③</strong>　同じテーブルに年代の条件を足すだけで確認</div>
+    </div>
+  </div>
+  <div class="arc-foot">この3往復のために新しく準備したのは、<b>DYNATREK上に作った入出金テーブル1つだけ</b>。以降はすべて条件指定で完結した ── これが締め（S13）で回収する一本の線です。</div>
+</section>
+
+<section>
+  <h2>スライド構成</h2>
+  <p class="sec-note">各カードは「タイトル ／ リード文 ／ 載せる文章 ／ 図・グラフ ／ 話す内容」。カードの間の帯が、前後スライドのつなぎです。<span class="ph">◯◯</span> は実測値に差し替える箇所。</p>
+
+  <div class="deck">
+
+  <!-- 1 -->
+  <article class="card">
+    <div class="head"><span class="num">01</span><span class="chip">導入</span><h3>専門知識がなくても、データで問いに答える</h3></div>
+    <div class="lead">今日お話しするのは、分析の結果そのものではなく、答えにたどり着くまでの過程です。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>DYNATREKは、条件を指定するだけでデータを集計・可視化できるツール</li>
+        <li>今回、あいち銀行の入出金データを題材に、業務上の疑問をデータで確かめた</li>
+        <li>本日はその一例を紹介する</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">「業務上の疑問」→「DYNATREK」→「答え」の横一本の矢印だけ。アイコンも文字も最小限にして、1枚目は主張だけが残るようにする。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">挨拶と自己紹介のあと、この発表の主役を先に宣言する。<span class="say">「今日の主役はDYNATREKという製品でもなければ、あいち銀行の分析結果でもありません。“疑問を持ってから、データで確かめるまでの距離が短くなる”という一点です」</span>と言い切ってから本編に入る。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>「距離が短くなる」と言われても、そもそも今の距離が遠いことが伝わっていない。次でその遠さを具体的に示す。</p></div>
+
+  <!-- 2 -->
+  <article class="card">
+    <div class="head"><span class="num">02</span><span class="chip">課題</span><h3>「知りたいこと」はある。でも、データは遠い</h3></div>
+    <div class="lead">業務のデータベースは、分析のためだけに作られているわけではありません。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>入出金のデータベースには、分析に使う項目以外にも多くの項目が含まれる</li>
+        <li>目的のデータを取り出すには、テーブル構造の理解と、抽出・集計の手続きが必要になる</li>
+        <li>結果として「気になるけれど、確かめるまでに手間がかかる」状態が生まれる</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">左に吹き出しで「IBって、実際に使われるようになったのかな？」。右に項目がびっしり並んだテーブルのイメージ（項目名はぼかす）。その間に段差か壁を1つ。<br>※スクリーンショットではなく概念図。ここで実画面を出すと後半のスクショが弱くなる。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">自分の立ち位置をここで正直に置く。<span class="say">「大学の研究でデータを扱った経験はありますが、銀行の業務も、このデータベースの構造も知らない状態から始めました」</span>。“分析ができない人”ではなく、“業務とDBの前提知識がない人”という設定にしておくと、後半の主張と矛盾しない。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>この壁を低くするのがDYNATREK。ただし機能紹介はしない ── 今日の話に必要な一点だけに絞る、と宣言して次へ。</p></div>
+
+  <!-- 3 -->
+  <article class="card">
+    <div class="head"><span class="num">03</span><span class="chip">ツール</span><h3>DYNATREK ── 条件を指定してデータを見る</h3></div>
+    <div class="lead">機能の説明はしません。今日の話に必要な一点だけをお伝えします。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>見たいデータの条件（期間・取引の種類など）を画面上で指定する</li>
+        <li>指定した条件で集計され、表やグラフとして出力される</li>
+        <li>条件を変えれば、すぐに別の切り口で見直せる</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">「条件を指定 → 集計 → 表・グラフ」の3ステップを横並びに。3つ目の矢印だけ、1つ目に戻る細い矢印を添えて“繰り返せる”ことを見せる。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">30秒で通過する。ただし3つ目だけは強調する。<span class="say">「大事なのは3つ目です。条件を変えるのが軽いので、“じゃあ、これはどうなんだろう”をその場で試せます。この後の話は、全部これの繰り返しです」</span>── ここで先に種を明かしておくと、後半の展開が“予告どおり”に見えて効く。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>道具の説明は終わり。ここから「では実際に何を題材にしたか」に移り、以降はすべて具体例で語る。</p></div>
+
+  <!-- 4 -->
+  <article class="card">
+    <div class="head"><span class="num">04</span><span class="chip">題材</span><h3>題材 ── あいち銀行の入出金データ</h3></div>
+    <div class="lead">手元にあるデータの期間と、銀行が置かれている状況が、きれいに重なっていました。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>使用データ：あいち銀行の入出金データ（2025年4〜6月／2026年4〜6月）</li>
+        <li>背景：あいちフィナンシャルグループは第2次中期経営計画（2025年4月〜2028年3月）で「DX戦略の加速化」を基本戦略に掲げ、バンキングアプリ・インターネット支店といった非対面チャネルの活用を重点施策としている</li>
+        <li>この2つの期間は、計画のスタート時点と、1年経過時点にあたる</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">横の時間軸。2025年4月に「第2次中期経営計画スタート」のマーカーを立て、2025年4〜6月と2026年4〜6月の2つの窓をハイライト。データの期間と計画の節目が重なっていることが、図だけで伝わる状態にする。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk"><span class="say">「データの期間を見たとき、ちょうど中期経営計画のスタート直後と、その1年後になっていることに気づきました。だとすれば、施策の手応えがこのデータに出ているはずです」</span>── 与えられたデータを眺めるだけでなく、業務の文脈と結びつけたという流れを、ここで自然に見せる。</div></div>
+    </div>
+  </article>
+
+  <div class="link beat"><span class="arrow">↓</span><p><span class="tag">つなぎ ／ 山場のはじまり</span>データと背景が重なった瞬間に、問いが立ち上がる。ここからループ1に入る。</p></div>
+
+  <!-- 5 -->
+  <article class="card">
+    <div class="head"><span class="num">05</span><span class="chip ask">問い ①</span><h3>IBの利用は、本当に広がっているのか</h3></div>
+    <div class="lead">施策が動いているなら、その手応えはデータに出ているはずです。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>非対面チャネルを進めているなら、インターネットバンキング（IB）の使われ方が変わっているはず</li>
+        <li>2025年4〜6月と2026年4〜6月を比べれば、1年間の変化が見える</li>
+        <li>同じ4〜6月どうしを比べるので、季節による差の影響を避けられる</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">問いを1行、大きく置くだけ。下に小さく、2つの期間の箱を並べて矢印でつないだ比較の図。文字を詰め込まず、聞き手の頭に問いだけを残す。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">問いを声に出して読み上げる。そのうえで、なぜ同じ四半期どうしの比較にしたのかを一言添える（給与・賞与・年度替わりなど、月によって取引の量は変わるため）。ここで比較設計に触れておくと、後半の解釈が軽くならない。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>問いが決まった。では実際にどう調べたか ── ただし、調べる前にひと手間あった、と切り出す。</p></div>
+
+  <!-- 6 -->
+  <article class="card">
+    <div class="head"><span class="num">06</span><span class="chip">準備</span><h3>準備 ── 入出金テーブルをDYNATREK上に作る</h3></div>
+    <div class="lead">調べ始める前に、「調べやすい形」を作るところから始めました。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>元のデータベースは項目が多く、そのままでは入出金の状況を追いにくい</li>
+        <li>DYNATREK上で、入出金に関する項目を集めたテーブルを作成した</li>
+        <li>以降の分析は、このテーブルに条件を指定するだけで行える</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">左に「多数の項目を持つ元のデータ」、右に「入出金テーブル」、間に集約の矢印。右側に書く項目名は、実際に使ったものだけを数個（日付・チャネル・取引種別・年代など）。架空の項目名は置かない。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">見た目は地味だが、この発表で一番効いている場所だと明言する。<span class="say">「一度この土台を作ってしまえば、後から出てきた疑問は、すべて条件を指定するだけで答えられるようになりました」</span>── S13の締めで回収する伏線なので、ここは急がずに置く。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>「条件を指定するだけ」と言われても実感が湧かない。次の1枚で、実際の画面を見せる。</p></div>
+
+  <!-- 7 -->
+  <article class="card">
+    <div class="head"><span class="num">07</span><span class="chip">実演</span><h3>条件を指定する。グラフが出る。</h3></div>
+    <div class="lead">実際の画面です。やっていることは、これだけです。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><p><span class="shot">用意済みスクショの本命はここ</span><br>文字はキャプションだけに絞る。<br>左＝「条件設定画面：期間・チャネル・取引種別を指定」／右＝「出力：指定した条件で集計されたグラフ」。</p></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">用意しているスクリーンショット2枚を左右に並べ、間に太い矢印。吹き出しでの注釈は多くても2つまで（「ここで期間を指定」「ここで取引の種類を絞る」程度）。画面の全機能を説明しようとしないこと。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">1分以内で切り上げる。<span class="say">「左で条件を指定すると、右がそのまま出てきます」</span>だけで足りる。操作手順を追わない。次の1枚から結果が始まる、と予告して抜ける。<br>※「SQLは書いていません」は、実際に書いていない場合のみ使う。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>道具立てはすべて揃った。ここから先は結果だけが続く。</p></div>
+
+  <!-- 8 -->
+  <article class="card">
+    <div class="head"><span class="num">08</span><span class="chip check">確認 ①</span><h3>IBの利用件数は増えていた</h3></div>
+    <div class="lead">1年間で、IBで行われた取引の件数はこう変わりました。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>対象：IBで行われた取引</li>
+        <li>2025年4〜6月　<span class="ph">◯◯件</span>　→　2026年4〜6月　<span class="ph">◯◯件</span>（<span class="ph">＋◯％</span>）</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">2期間の棒グラフ（または月次6点の折れ線を2期間重ねる）。軸ラベル・単位・期間を明記し、増加分だけ色を強める。<br><b>重要：</b>このグラフの体裁・色ルールを、S10・S11でもそのまま使い回すこと。形が揃っていないと、S11の対比が読み取れない。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">数字を読み上げ、増えていることを確認する。そして必ず引きを作る。<span class="say">「増えています。……ここで発表を終えてもいいのですが、私はこの時点で、ひとつ引っかかりました」</span>── ここが発表全体で一番の転換点。間を置いて次へ。</div></div>
+    </div>
+  </article>
+
+  <div class="link beat"><span class="arrow">↓</span><p><span class="tag">つなぎ ／ 転換点</span>ひとつの数字が出た瞬間に、新しい問いが生まれる。この生まれ方こそが今日の主題なので、独立した1枚を割く。</p></div>
+
+  <!-- 9 -->
+  <article class="card">
+    <div class="head"><span class="num">09</span><span class="chip ask">問い ②</span><h3>増えた。では「普及した」と言えるか？</h3></div>
+    <div class="lead">件数が増えたことと、IBに置き換わったことは、同じではありません。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>IBの件数が増えても、ATMでの取引がそのまま残っていれば「増えただけ」</li>
+        <li>「置き換わっている」と言うには、ATM側が減っているかも見る必要がある</li>
+        <li>そこで、ATMで行われている取引のうち、IBでも同じことができる取引（振込・振替など）を数えた</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">2つの器を並べた概念図。「IB」と「ATM（IBでも可能な取引）」の間に移動の矢印。<br>※これは結果ではなく考え方の図。数値は載せない。口頭でも「まだ結果ではありません」と添える。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">思いつき自体は特別ではない、と正直に言うほうが強い。<span class="say">「比較対象を置こう、という発想自体は普通のことだと思います。大きかったのは、思いついたときにすぐ試せたことでした。新しくデータをもらう必要も、誰かに依頼する必要もなく、条件を変えるだけでした」</span></div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>「条件を変えるだけ」で出てきたのが、次の結果。</p></div>
+
+  <!-- 10 -->
+  <article class="card">
+    <div class="head"><span class="num">10</span><span class="chip check">確認 ②</span><h3>ATM側は減っていた</h3></div>
+    <div class="lead">IBでもできる取引に絞ってATMを見ると、逆向きに動いていました。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>対象：ATMでの取引のうち、IBでも行えるもの（振込・振替 など）</li>
+        <li>2025年4〜6月　<span class="ph">◯◯件</span>　→　2026年4〜6月　<span class="ph">◯◯件</span>（<span class="ph">−◯％</span>）</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">S08と同じ形式・同じ軸・同じ色ルールの棒グラフ。減少方向であることが一目で分かるよう、増加時と色を変える。<br>「IBでも行える取引」に何を含めたかは、グラフ脇に小さく明記しておく（後で必ず聞かれる）。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk">結果を読み上げる。ここでは解釈をまだ言わない。<span class="say">「では、この2つを並べてみます」</span>で次へ渡すと、次の1枚が効く。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>2つの結果が揃った。ループ1とループ2の回収。</p></div>
+
+  <!-- 11 -->
+  <article class="card">
+    <div class="head"><span class="num">11</span><span class="chip">解釈</span><h3>2つを並べると、見えること</h3></div>
+    <div class="lead">片方だけでは言えなかったことが、2つ並べると言えるようになります。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>IB：増加　／　ATM（IBでも可能な取引）：減少</li>
+        <li>同じ期間・同じデータで逆方向に動いている　→　「増えた」ではなく「置き換わりつつある」と読める</li>
+        <li>ただし件数は取引全体の増減にも影響されるため、断定ではなく傾向として捉えている</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">S08とS10のグラフを1枚に並置。上下または左右に配置し、それぞれに大きな↑と↓を添えて逆方向であることを一目で示す。増減率だけを対比した簡潔なバーでも良い。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk"><span class="say">「ひとつの数字だけを見ていると、都合よく読めてしまいます。比較対象を置くと、言えることの範囲が変わります」</span>── ここは学びに寄りすぎず1文で止める。学びの掘り下げは後続パートの担当。3つ目の但し書きも、逃げではなく“どこまで言えるかを自分で線引きした”という姿勢として、はっきり口に出す。</div></div>
+    </div>
+  </article>
+
+  <div class="link beat"><span class="arrow">↓</span><p><span class="tag">つなぎ ／ 3周目</span>結論が出たところで、また次の疑問が湧く。「全体で動いているなら、誰が動かしているのか」。</p></div>
+
+  <!-- 12 -->
+  <article class="card">
+    <div class="head"><span class="num">12</span><span class="chip ask">問い ③</span><span class="chip check" style="margin-left:-6px">確認 ③</span><h3>では、どの年代で進んでいるのか</h3></div>
+    <div class="lead">全体が動いているなら、次に気になるのは「誰が」です。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>同じテーブルに「年代」の条件を加えるだけで確認できた</li>
+        <li>結果：<span class="ph">◯代で特に◯◯</span>（実際に出た結果に合わせて記載）</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">横軸に年代をとった棒グラフ。IB側・ATM側のどちらを見た結果なのかを必ず明記する。<br><span class="shot">スクショの2度目の使いどころ</span>S07の条件設定画面から「年代」の部分だけを切り出して小さく添えると、「条件を1つ足しただけ」が絵で伝わる。任意だが、ここが一番効く。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk"><span class="say">「ここまで、新しいデータの準備も、誰かへの依頼も発生していません。条件を1つ足しただけです」</span>── 3周目にしてこの台詞が出ると、S03で予告した「全部これの繰り返しです」がきれいに回収される。結果の中身そのものより、たどり着く速さを強調する。</div></div>
+    </div>
+  </article>
+
+  <div class="link"><span class="arrow">↓</span><p><span class="tag">つなぎ</span>3往復が終わった。ここまでの流れを一枚に畳んで締める。</p></div>
+
+  <!-- 13 -->
+  <article class="card">
+    <div class="head"><span class="num">13</span><span class="chip">まとめ</span><h3>今回できたこと</h3></div>
+    <div class="lead">特別なことはしていません。浮かんだ疑問を、その場で確かめ続けただけです。</div>
+    <div class="body">
+      <div class="blk"><div class="lbl">載せる文章</div><ul>
+        <li>問い（広がっているか）→ 確認 → 問い（置き換わっているか）→ 確認 → 問い（どの年代か）→ 確認</li>
+        <li>この3往復を、入出金テーブルを1つ用意した後は、条件指定だけで回せた</li>
+        <li>DYNATREKの価値は「分析ができること」よりも、疑問を持ってから確かめるまでが短いことにある</li>
+      </ul></div>
+      <div class="blk"><div class="lbl">図・グラフ</div><div class="visual">冒頭のストーリー図を再掲する（問い→確認のループを3つ横並び）。下に一言だけ添える：「新しいデータの準備・依頼：なし」。<br>冒頭と同じ図を使うことで、発表が一周して閉じた感じが出る。</div></div>
+      <div class="blk"><div class="lbl">話す内容</div><div class="talk"><span class="say">「業務のなかで“ちょっと気になる”が生まれたときに、その場で確かめられる。それが今回いちばん実感した価値です」</span>で締め、<span class="say">「ここからは、この取り組みを通じて私自身が学んだこと、苦労したことをお話しします」</span>と後続パートへ橋渡しする。<br><b>この1枚に「今後の展望」は書かない。</b>分析の続きは行えないので、将来の話をすると空手形になる。目標・達成度・課題はすべて後続パートの担当。</div></div>
+    </div>
+  </article>
+
+  </div>
+</section>
+
+<section>
+  <h2>作る前に確認してほしいこと</h2>
+  <p class="sec-note">事実関係と言葉づかいで、発表当日にツッコまれやすい箇所です。</p>
+  <div class="notes">
+
+    <div class="note warn">
+      <h4>中期経営計画の「重点施策⑦」── 番号は未確認</h4>
+      <p>公開情報から確認できたのは次までです：あいちフィナンシャルグループの<b>第2次中期経営計画（2025年4月〜2028年3月）</b>、テーマは「銀行業を超えたトータルサポートグループ」、基本戦略のひとつに<b>「DX戦略の加速化」</b>、重点施策として<b>「バンキングアプリ、インターネット支店や法人プラットフォームの有効活用」</b>や店舗網の最適化・窓口事務の削減が挙げられています。</p>
+      <p style="margin-top:8px">一方、<b>これが「重点施策⑦」であるかは確認できませんでした</b>（原典PDFが今回のネットワークから取得できず）。当日「⑦」と番号で言い切るなら、公式PDFで採番を確認してください。確認が取れない場合は<b>「重点施策のひとつ」</b>と書けば事実関係は崩れません。</p>
+      <p style="margin-top:8px">原典：<a href="https://www.aichi-fg.co.jp/company/plan/">あいちフィナンシャルグループ「経営計画」</a>／<a href="https://www.aichi-fg.co.jp/release/files/pdf/news20250212.pdf">第2次中期経営計画の策定について（2025.2.12）</a>／<a href="https://www.aichi-fg.co.jp/release/files/pdf/news20250919.pdf">DX推進計画（2025.9.19）</a></p>
+    </div>
+
+    <div class="note warn">
+      <h4>「利用率」と言わない ── 測ったのは件数</h4>
+      <p>今回集計したのは<b>件数</b>です。「利用率」と言うと分母（全取引？ 全顧客？）を必ず問われます。実際に率を出していないなら、スライドも口頭も<b>「利用件数」</b>で統一してください。率で語りたい場合は、分母を明示できる形（例：IB件数 ÷（IB件数＋ATMのIB代替可能件数））で定義してから使うこと。</p>
+    </div>
+
+    <div class="note">
+      <h4>「分析経験がない」とは言わない</h4>
+      <p>主張は「分析ができない人でもできた」ではなく、<b>「銀行業務やデータベースの構造を知らなくても、問いから答えまでたどり着けた」</b>。S02でこの線引きを一度置いておけば、研究経験と矛盾しません。</p>
+    </div>
+
+    <div class="note">
+      <h4>やっていない分析を書かない</h4>
+      <p>S09の器の図は<b>考え方の概念図</b>であって結果ではない、と口頭で明示。<span class="ph">◯◯</span> の箇所はすべて実測値に差し替え、埋まらない項目はスライドごと落とす。金額・件数・比率のうち、実際に出したものだけを載せる。</p>
+    </div>
+
+    <div class="note">
+      <h4>グラフの体裁を S08 / S10 / S11 で揃える</h4>
+      <p>この3枚は「並べて比べる」ことが仕事なので、軸の取り方・単位・棒の太さ・色ルールが揃っていないと成立しません。S08を作った時点でテンプレートを固定し、S10はその複製から作るのが安全です。</p>
+    </div>
+
+    <div class="note">
+      <h4>「IBでも行える取引」の定義を1行で言えるように</h4>
+      <p>質疑でほぼ確実に聞かれます。振込・振替など、実際に対象に含めた取引種別を<b>S10のグラフ脇に小さく明記</b>し、口頭でも一度言っておくと、以降の解釈が安定します。</p>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>時間配分と、削る場合の順番</h2>
+  <p class="sec-note">10分想定の目安です。持ち時間が違う場合は、S08〜S12（結果）の比率を保ったまま前半を削ってください。</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>区間</th><th>スライド</th><th>目安</th><th>役割</th></tr></thead>
+      <tbody>
+        <tr><td>導入</td><td class="t">01–03</td><td class="t">2分</td><td>主張の宣言と、道具の最小限の説明</td></tr>
+        <tr><td>設定</td><td class="t">04–07</td><td class="t">3分</td><td>題材・問い・準備・実際の画面</td></tr>
+        <tr><td>本編</td><td class="t">08–12</td><td class="t">4分</td><td>問いと確認の3往復。ここが山</td></tr>
+        <tr><td>締め</td><td class="t">13</td><td class="t">1分</td><td>回収と、後続パートへの橋渡し</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="arc-foot" style="margin-top:16px">
+    <b>枚数を減らすなら、この順で。</b>　① S03をS01に統合（3ステップの図を1枚目の下部に置く）→ 12枚。　② S09をS10の上半分に畳む（ただし「増えた＝普及ではない」という転換は必ず口頭で残す）→ 11枚。<br>
+    <b>削ってはいけないのは S06・S09・S12。</b>「テーブルを1つ作れば、あとは条件指定だけ」という主張は、この3枚が揃って初めて成立します。
+  </div>
+</section>
+
+<footer>
+  発表構成メモ ／ 実際のテーマ内容パート（全13枚）。学んだこと・苦労したこと・目標と達成度・今後の課題は後続パートに分離。
+</footer>
+
+</div>

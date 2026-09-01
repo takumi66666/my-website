@@ -1,658 +1,304 @@
 const pptxgen = require("pptxgenjs");
 const pres = new pptxgen();
-pres.layout = "LAYOUT_WIDE";               // 13.33 x 7.5
-pres.author = "";
-pres.title = "DYNATREKを使った分析の紹介";
+pres.layout = "LAYOUT_WIDE";                 // 13.33 x 7.5
+pres.title = "銀行データを価値に変えるプロセス";
 
-/* ---------- design tokens ---------- */
-const INK   = "13292E";
-const INK2  = "45585B";
-const MUTED = "7B8C8E";
-const TEAL  = "15616D";
-const TEALD = "0C2E33";
-const TEALL = "E3EFF0";
-const ORG   = "AD5717";
-const ORGL  = "F8EDE2";
-const LINE  = "D3DCDA";
-const PANEL = "F2F6F5";
-const WHITE = "FFFFFF";
-const DMUT  = "9FC1C5";
-const F     = "Meiryo";
-
-const M = 0.62, W = 13.33 - M * 2, SW = 13.33, SH = 7.5;
+/* ---------- tokens ---------- */
+const INK="1A2B33", INK2="465A63", MUTED="8497A0", LINE="D8E0E3", PANEL="F3F6F7";
+const PRI="0F5A6B", PRIL="E2EEF0", ACC="B4551F", ACCL="F8EBE1", WHITE="FFFFFF";
+const F="Meiryo";
+const M=0.70, W=13.333-M*2, SW=13.333, SH=7.5, CX=M+0.64, CW=W-0.64;
 
 /* ---------- helpers ---------- */
-function bg(s, dark) { s.background = { color: dark ? TEALD : WHITE }; }
+function slide(n, section, title, lead){
+  const s = pres.addSlide();
+  s.background = { color: WHITE };
+  s.addShape(pres.ShapeType.ellipse,{x:M,y:0.62,w:0.44,h:0.44,fill:{color:PRI},line:{color:PRI,width:0}});
+  s.addText(String(n).padStart(2,"0"),{isTextBox:true,x:M,y:0.62,w:0.44,h:0.44,margin:0,
+    align:"center",valign:"middle",fontFace:F,fontSize:11.5,bold:true,color:WHITE});
+  s.addText(section,{isTextBox:true,x:CX,y:0.44,w:7,h:0.25,margin:0,
+    fontFace:F,fontSize:10.5,bold:true,color:PRI,charSpacing:1.5});
+  s.addText(title,{isTextBox:true,x:CX,y:0.66,w:CW,h:0.6,margin:0,
+    fontFace:F,fontSize:26,bold:true,color:INK});
+  if(lead) s.addText(lead,{isTextBox:true,x:CX,y:1.28,w:CW,h:0.38,margin:0,
+    fontFace:F,fontSize:12.5,color:MUTED});
+  s.addText(String(n).padStart(2,"0"),{isTextBox:true,x:SW-1.16,y:SH-0.70,w:0.6,h:0.28,margin:0,
+    align:"right",fontFace:F,fontSize:10,color:MUTED,charSpacing:1});
+  return s;
+}
+function card(s,o){
+  s.addShape(pres.ShapeType.roundRect,{x:o.x,y:o.y,w:o.w,h:o.h,rectRadius:0.05,
+    fill:{color:o.fill||PANEL},line:{color:o.line||(o.fill||PANEL),width:o.lw||0.75}});
+}
+function txt(s,t,o){ s.addText(t,Object.assign({isTextBox:true,margin:0,fontFace:F,fontSize:13,color:INK2},o)); }
+function dArrow(s,x,y,h,c){ s.addShape(pres.ShapeType.downArrow,{x:x,y:y,w:0.24,h:h,fill:{color:c||"C2CFD3"},line:{color:c||"C2CFD3",width:0}}); }
+function rArrow(s,x,y,w,c){ s.addShape(pres.ShapeType.rightArrow,{x:x,y:y,w:w,h:0.24,fill:{color:c||"C2CFD3"},line:{color:c||"C2CFD3",width:0}}); }
 
-function foot(s, n, dark) {
-  s.addText(String(n).padStart(2, "0"), {
-    isTextBox: true, x: SW - 1.12, y: SH - 0.70, w: 0.6, h: 0.3, margin: 0,
-    align: "right", fontFace: F, fontSize: 10, color: dark ? DMUT : MUTED, charSpacing: 1
-  });
+/* grey dashed frame = paste a chart/image here */
+function chartBox(s,o){
+  s.addShape(pres.ShapeType.roundRect,{x:o.x,y:o.y,w:o.w,h:o.h,rectRadius:0.05,
+    fill:{color:PANEL},line:{color:"BFCCD1",width:1.25,dashType:"dash"}});
+  s.addText(o.label,{isTextBox:true,x:o.x,y:o.y+o.h/2-0.44,w:o.w,h:0.34,margin:0,
+    align:"center",fontFace:F,fontSize:13,bold:true,color:PRI});
+  s.addText(o.sub,{isTextBox:true,x:o.x+0.3,y:o.y+o.h/2-0.04,w:o.w-0.6,h:0.8,margin:0,
+    align:"center",fontFace:F,fontSize:11,color:MUTED,lineSpacing:17});
+}
+/* orange dashed field = write your reading here */
+function blank(s,o){
+  s.addShape(pres.ShapeType.roundRect,{x:o.x,y:o.y,w:o.w,h:o.h,rectRadius:0.05,
+    fill:{color:ACCL},line:{color:"D9A97F",width:1.25,dashType:"dash"}});
+  s.addText(o.label,{isTextBox:true,x:o.x+0.24,y:o.y+0.15,w:o.w-0.48,h:0.26,margin:0,
+    fontFace:F,fontSize:10.5,bold:true,color:ACC,charSpacing:0.8});
+  s.addText(o.hint,{isTextBox:true,x:o.x+0.24,y:o.y+0.44,w:o.w-0.48,h:o.h-0.58,margin:0,
+    fontFace:F,fontSize:11.5,color:"A2795C",lineSpacing:17});
+}
+function band(s,o){
+  s.addShape(pres.ShapeType.roundRect,{x:o.x||M,y:o.y,w:o.w||W,h:o.h||0.72,rectRadius:0.05,
+    fill:{color:o.fill||PRIL},line:{color:o.fill||PRIL,width:0}});
+  s.addText(o.text,{isTextBox:true,x:(o.x||M)+0.3,y:o.y,w:(o.w||W)-0.6,h:o.h||0.72,margin:0,
+    align:"center",valign:"middle",fontFace:F,fontSize:o.size||14,bold:true,color:o.color||PRI,lineSpacing:o.ls});
 }
 
-// role: {label, color}
-function header(s, o) {
-  const dark = !!o.dark;
-  const rc = o.color || (dark ? DMUT : TEAL);
-  s.addShape(pres.ShapeType.ellipse, {
-    x: M, y: 0.64, w: 0.46, h: 0.46, fill: { color: rc },
-    line: { color: rc, width: 0 }
-  });
-  s.addText(String(o.num).padStart(2, "0"), {
-    isTextBox: true, x: M, y: 0.64, w: 0.46, h: 0.46, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 12, bold: true, color: WHITE
-  });
-  s.addText(o.role, {
-    isTextBox: true, x: M + 0.66, y: 0.46, w: 6, h: 0.26, margin: 0,
-    fontFace: F, fontSize: 11, bold: true, color: rc, charSpacing: 1.4
-  });
-  s.addText(o.title, {
-    isTextBox: true, x: M + 0.66, y: 0.70, w: W - 0.66, h: 0.62, margin: 0,
-    fontFace: F, fontSize: o.titleSize || 27, bold: true,
-    color: dark ? WHITE : INK, valign: "top"
-  });
-  if (o.lead) s.addText(o.lead, {
-    isTextBox: true, x: M + 0.66, y: 1.38, w: W - 0.66, h: 0.4, margin: 0,
-    fontFace: F, fontSize: 13, color: dark ? DMUT : MUTED
-  });
-}
-
-function bullets(s, items, o) {
-  s.addText(items.map((t, i) => ({
-    text: t, options: { bullet: true, breakLine: i !== items.length - 1 }
-  })), Object.assign({
-    isTextBox: true, margin: 0, fontFace: F, fontSize: 14, color: INK2,
-    lineSpacing: 24, paraSpaceAfter: 10, valign: "top"
-  }, o));
-}
-
-// dashed placeholder frame
-function frame(s, o) {
-  s.addShape(pres.ShapeType.roundRect, {
-    x: o.x, y: o.y, w: o.w, h: o.h, rectRadius: 0.05,
-    fill: { color: o.tint || PANEL },
-    line: { color: o.border || LINE, width: 1.25, dashType: "dash" }
-  });
-  const hasSub = !!o.sub;
-  s.addText(o.label, {
-    isTextBox: true, x: o.x, y: o.y + o.h / 2 - (hasSub ? 0.42 : 0.2), w: o.w, h: 0.4, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: o.size || 13, bold: true, color: o.fg || TEAL
-  });
-  if (hasSub) s.addText(o.sub, {
-    isTextBox: true, x: o.x + 0.25, y: o.y + o.h / 2 - 0.02, w: o.w - 0.5, h: 0.75, margin: 0,
-    align: "center", valign: "top", fontFace: F, fontSize: 11, color: MUTED, lineSpacing: 17
-  });
-}
-
-function card(s, o) {
-  s.addShape(pres.ShapeType.roundRect, {
-    x: o.x, y: o.y, w: o.w, h: o.h, rectRadius: 0.05,
-    fill: { color: o.fill || PANEL }, line: { color: o.line || "F2F6F5", width: 0.75 }
-  });
-}
-
-function arrow(s, x, y, w, color) {
-  s.addShape(pres.ShapeType.rightArrow, {
-    x: x, y: y, w: w, h: 0.26, fill: { color: color || LINE }, line: { color: color || LINE, width: 0 }
-  });
-}
-
-function label(s, t, o) {
-  s.addText(t, Object.assign({
-    isTextBox: true, margin: 0, fontFace: F, fontSize: 10.5, bold: true, color: MUTED, charSpacing: 1.1
-  }, o));
-}
-
-/* ================= SLIDE 1 ================= */
+/* ===================== 01 きっかけ ===================== */
 {
-  const s = pres.addSlide(); bg(s, true);
-  s.addText("成果発表 ／ 実際のテーマ内容", {
-    isTextBox: true, x: M, y: 0.78, w: 8, h: 0.3, margin: 0,
-    fontFace: F, fontSize: 12, bold: true, color: DMUT, charSpacing: 2
-  });
-  s.addText("専門知識がなくても、\nデータで問いに答える", {
-    isTextBox: true, x: M, y: 1.28, w: 11.6, h: 1.7, margin: 0,
-    fontFace: F, fontSize: 38, bold: true, color: WHITE, lineSpacing: 52
-  });
-  s.addText("DYNATREKを使って行った分析の紹介", {
-    isTextBox: true, x: M, y: 3.08, w: 10, h: 0.36, margin: 0,
-    fontFace: F, fontSize: 16, color: DMUT
-  });
+  const s = slide(1,"き っ か け","「預金の増減を調べたい」という相談から",
+    "本インターンのテーマ：銀行内で保有する各種データを分析し、どのような価値に変換していくかのプロセスを学ぶ");
 
-  const bw = 3.69, bg2 = 0.50, by = 4.15, bh = 1.0;
-  const bx = [M, M + bw + bg2, M + (bw + bg2) * 2];
-  const boxes = ["業務上の疑問", "DYNATREK", "答え"];
-  boxes.forEach((t, i) => {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: bx[i], y: by, w: bw, h: bh, rectRadius: 0.05,
-      fill: { color: i === 1 ? TEAL : "17383E" }, line: { color: i === 1 ? TEAL : "27484E", width: 1 }
-    });
-    s.addText(t, {
-      isTextBox: true, x: bx[i], y: by, w: bw, h: bh, margin: 0, align: "center", valign: "middle",
-      fontFace: F, fontSize: 15, bold: true, color: WHITE
-    });
-  });
-  arrow(s, bx[0] + bw + 0.09, by + 0.37, 0.32, "43666C");
-  arrow(s, bx[1] + bw + 0.09, by + 0.37, 0.32, "43666C");
-
-  s.addText("所属 ／ 氏名　（発表日）", {
-    isTextBox: true, x: M, y: 6.55, w: 6, h: 0.3, margin: 0,
-    fontFace: F, fontSize: 12, color: DMUT
-  });
-  s.addNotes("挨拶と自己紹介のあと、この発表の主役を先に宣言する。\n「今日の主役はDYNATREKという製品でもなければ、あいち銀行の分析結果でもありません。“疑問を持ってから、データで確かめるまでの距離が短くなる”という一点です」と言い切ってから本編に入る。");
-  foot(s, 1, true);
-}
-
-/* ================= SLIDE 2 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 2, role: "課 題", title: "「知りたいこと」はある。でも、データは遠い",
-    lead: "業務のデータベースは、分析のためだけに作られているわけではありません。" });
-
-  bullets(s, [
-    "入出金のデータベースには、分析に使う項目以外にも多くの項目が含まれる",
-    "目的のデータを取り出すには、テーブル構造の理解と、抽出・集計の手続きが必要になる",
-    "結果として「気になるけれど、確かめるまでに手間がかかる」状態が生まれる"
-  ], { x: M, y: 2.15, w: 6.15, h: 3.1 });
-
-  const rx = 7.35, rw = 5.36;
-  card(s, { x: rx, y: 2.05, w: rw, h: 4.35, fill: PANEL });
-  s.addShape(pres.ShapeType.roundRect, {
-    x: rx + 0.42, y: 2.32, w: rw - 0.84, h: 0.82, rectRadius: 0.12,
-    fill: { color: WHITE }, line: { color: ORG, width: 1.25 }
-  });
-  s.addText("IBって、実際に使われるように\nなったのかな？", {
-    isTextBox: true, x: rx + 0.42, y: 2.32, w: rw - 0.84, h: 0.82, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 12.5, bold: true, color: ORG, lineSpacing: 18
-  });
-  s.addShape(pres.ShapeType.downArrow, {
-    x: rx + rw / 2 - 0.13, y: 3.28, w: 0.26, h: 0.42, fill: { color: "C3CECC" }, line: { color: "C3CECC", width: 0 }
-  });
-  s.addShape(pres.ShapeType.rect, {
-    x: rx + 0.42, y: 3.82, w: rw - 0.84, h: 0.62,
-    fill: { color: "DDE4E2" }, line: { color: "C9D3D1", width: 1 }
-  });
-  s.addText("テーブル構造の理解 ／ 抽出・集計の手続き", {
-    isTextBox: true, x: rx + 0.42, y: 3.82, w: rw - 0.84, h: 0.62, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 12, bold: true, color: INK2
-  });
-  s.addShape(pres.ShapeType.downArrow, {
-    x: rx + rw / 2 - 0.13, y: 4.56, w: 0.26, h: 0.36, fill: { color: "C3CECC" }, line: { color: "C3CECC", width: 0 }
-  });
-  s.addShape(pres.ShapeType.rect, {
-    x: rx + 0.42, y: 5.04, w: rw - 0.84, h: 1.06,
-    fill: { color: WHITE }, line: { color: LINE, width: 1 }
-  });
-  s.addText("入出金データベース\n（分析に使わない項目も多数）", {
-    isTextBox: true, x: rx + 0.42, y: 5.04, w: rw - 0.84, h: 1.06, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 12.5, color: INK2, lineSpacing: 19
-  });
-  s.addNotes("自分の立ち位置をここで正直に置く。\n「大学の研究でデータを扱った経験はありますが、銀行の業務も、このデータベースの構造も知らない状態から始めました」\n※“分析ができない人”ではなく“業務とDBの前提知識がない人”という設定にしておくと、後半の主張と矛盾しない。");
-  foot(s, 2, false);
-}
-
-/* ================= SLIDE 3 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 3, role: "使 っ た ツ ー ル", title: "DYNATREK ── 条件を指定してデータを見る",
-    lead: "機能の説明はしません。今日の話に必要な一点だけをお伝えします。" });
-
-  const cw = 3.66, gap = 0.555, cy = 2.35, ch = 2.0;
-  const cx = [M, M + cw + gap, M + (cw + gap) * 2];
-  const steps = [
-    ["条件を指定する", "期間・取引の種類などを\n画面上で指定する"],
-    ["集計される", "指定した条件のデータが\nそのまま集計される"],
-    ["表・グラフが出る", "結果が表やグラフとして\n出力される"]
+  const lw=6.55, ch=1.05, ys=[2.05,3.38,4.71];
+  const steps=[
+    ["あいち銀行様からのご相談","「預金の増減を調べたい」"],
+    ["ところが","行内のデータは項目が多く、見たい条件でまとめて取り出す手段がない"],
+    ["そこで","DYNATREK ── 条件を指定して、必要なデータを集計・表示できるツール"]
   ];
-  steps.forEach((st, i) => {
-    card(s, { x: cx[i], y: cy, w: cw, h: ch, fill: i === 2 ? TEALL : PANEL });
-    s.addText(String(i + 1), {
-      isTextBox: true, x: cx[i] + 0.3, y: cy + 0.26, w: 0.5, h: 0.34, margin: 0,
-      fontFace: F, fontSize: 17, bold: true, color: i === 2 ? TEAL : "AFBEBC"
-    });
-    s.addText(st[0], {
-      isTextBox: true, x: cx[i] + 0.3, y: cy + 0.72, w: cw - 0.6, h: 0.36, margin: 0,
-      fontFace: F, fontSize: 15, bold: true, color: INK
-    });
-    s.addText(st[1], {
-      isTextBox: true, x: cx[i] + 0.3, y: cy + 1.14, w: cw - 0.6, h: 0.7, margin: 0,
-      fontFace: F, fontSize: 12, color: INK2, lineSpacing: 18
-    });
-    if (i < 2) arrow(s, cx[i] + cw + 0.12, cy + ch / 2 - 0.13, 0.31, "C3CECC");
+  steps.forEach((st,i)=>{
+    card(s,{x:M,y:ys[i],w:lw,h:ch,fill:i===2?PRIL:PANEL});
+    txt(s,st[0],{x:M+0.3,y:ys[i]+0.15,w:lw-0.6,h:0.24,fontSize:10.5,bold:true,
+      color:i===2?PRI:MUTED,charSpacing:1});
+    txt(s,st[1],{x:M+0.3,y:ys[i]+0.44,w:lw-0.6,h:0.5,fontSize:13.5,bold:i===2,
+      color:i===2?PRI:INK,lineSpacing:19});
+    if(i<2) dArrow(s,M+0.55,ys[i]+ch+0.03,0.26);
   });
 
-  s.addShape(pres.ShapeType.roundRect, {
-    x: M, y: 4.75, w: W, h: 0.78, rectRadius: 0.06,
-    fill: { color: ORGL }, line: { color: ORGL, width: 0 }
-  });
-  s.addText("条件を変えれば、すぐに別の切り口で見直せる　── この後の話は、すべてこの繰り返しです", {
-    isTextBox: true, x: M, y: 4.75, w: W, h: 0.78, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 14, bold: true, color: ORG
-  });
-  s.addNotes("30秒で通過する。ただし3つ目だけは強調する。\n「大事なのは3つ目です。条件を変えるのが軽いので、“じゃあ、これはどうなんだろう”をその場で試せます。この後の話は、全部これの繰り返しです」\n※ここで先に種を明かしておくと、後半の展開が“予告どおり”に見えて効く。");
-  foot(s, 3, false);
+  const rx=7.62, rw=5.01;
+  card(s,{x:rx,y:2.05,w:rw,h:3.71,fill:WHITE,line:"D9A97F",lw:1.25});
+  txt(s,"例えば、\nどんなことが\nできるのか？",{x:rx+0.4,y:2.45,w:rw-0.8,h:1.75,
+    fontSize:23,bold:true,color:ACC,lineSpacing:38});
+  s.addShape(pres.ShapeType.rect,{x:rx+0.4,y:4.32,w:rw-0.8,h:0.012,fill:{color:"E2CDB9"},line:{color:"E2CDB9",width:0}});
+  txt(s,"本発表では、その一例として\n私が行った分析を紹介します",{x:rx+0.4,y:4.62,w:rw-0.8,h:0.8,
+    fontSize:14,color:INK,lineSpacing:24});
+
+  s.addNotes("インターンのテーマは、銀行が持っているデータを分析して価値に変えるプロセスを学ぶことでした。\n出発点は、あいち銀行様の「預金の増減を調べたい」というご相談です。ただ、行内のデータは項目が多く、見たい条件でまとめて取り出すのが簡単ではありません。そこで使ったのがDYNATREKです。\n「では、実際にどんなことができるのか」──本発表では、その一例として私が行った分析を紹介します。");
 }
 
-/* ================= SLIDE 4 ================= */
+/* ===================== 02 背景 ===================== */
 {
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 4, role: "題 材", title: "題材 ── あいち銀行の入出金データ",
-    lead: "手元にあるデータの期間と、銀行が置かれている状況が、きれいに重なっていました。" });
+  const s = slide(2,"背 景","非対面チャネルの利用拡大は、経営計画上の狙いでもある",
+    "今回のテーマは、あいち銀行様が経営計画で掲げている方向と重なっています。");
 
-  // timeline
-  const tx = M + 0.4, tw = W - 0.8, ty = 2.78;
-  s.addShape(pres.ShapeType.rect, { x: tx, y: ty, w: tw, h: 0.035, fill: { color: "C9D3D1" }, line: { color: "C9D3D1", width: 0 } });
-  s.addShape(pres.ShapeType.ellipse, { x: tx - 0.09, y: ty - 0.075, w: 0.19, h: 0.19, fill: { color: TEAL }, line: { color: TEAL, width: 0 } });
-  s.addText("2025年4月　第2次中期経営計画スタート", {
-    isTextBox: true, x: tx - 0.05, y: ty - 0.62, w: 6, h: 0.3, margin: 0,
-    fontFace: F, fontSize: 12, bold: true, color: TEAL
-  });
-  s.addText("2028年3月", {
-    isTextBox: true, x: tx + tw - 2.2, y: ty - 0.52, w: 2.2, h: 0.28, margin: 0,
-    align: "right", fontFace: F, fontSize: 11.5, color: MUTED
-  });
-
-  const winW = 2.5;
-  const wins = [[tx + 0.12, "2025年4〜6月", "計画スタート直後"], [tx + 4.9, "2026年4〜6月", "1年経過時点"]];
-  wins.forEach(w => {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: w[0], y: ty + 0.28, w: winW, h: 0.92, rectRadius: 0.06,
-      fill: { color: TEALL }, line: { color: "BBD5D7", width: 1 }
-    });
-    s.addText(w[1], {
-      isTextBox: true, x: w[0], y: ty + 0.4, w: winW, h: 0.32, margin: 0,
-      align: "center", fontFace: F, fontSize: 14, bold: true, color: TEAL
-    });
-    s.addText(w[2], {
-      isTextBox: true, x: w[0], y: ty + 0.76, w: winW, h: 0.28, margin: 0,
-      align: "center", fontFace: F, fontSize: 11, color: MUTED
-    });
-  });
-  s.addText("← 使用したデータの期間 →", {
-    isTextBox: true, x: tx + 0.12, y: ty + 1.28, w: winW * 2 + 2.28, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 11, color: MUTED
-  });
-
-  bullets(s, [
-    "使用データ：あいち銀行の入出金データ（2025年4〜6月／2026年4〜6月）",
-    "背景：あいちフィナンシャルグループは第2次中期経営計画（2025年4月〜2028年3月）で「DX戦略の加速化」を基本戦略に掲げている",
-    "重点施策には、バンキングアプリやインターネット支店など非対面チャネルの活用が挙げられている",
-    "この2つの期間は、計画のスタート時点と1年経過時点にあたる"
-  ], { x: M, y: 4.62, w: W, h: 2.1, fontSize: 13.5 });
-  s.addNotes("「データの期間を見たとき、ちょうど中期経営計画のスタート直後と、その1年後になっていることに気づきました。だとすれば、施策の手応えがこのデータに出ているはずです」\n\n※中期経営計画の「重点施策⑦」という番号は未確認。公式PDFで採番を確認できない場合は「重点施策のひとつ」と言うこと。");
-  foot(s, 4, false);
-}
-
-/* ================= SLIDE 5 ================= */
-{
-  const s = pres.addSlide(); bg(s, true);
-  header(s, { num: 5, role: "問 い ①", title: "IBの利用は、本当に広がっているのか",
-    lead: "施策が動いているなら、その手応えはデータに出ているはずです。", dark: true, color: "D98A45", titleSize: 30 });
-
-  bullets(s, [
-    "非対面チャネルを進めているなら、インターネットバンキング（IB）の使われ方が変わっているはず",
-    "2025年4〜6月と2026年4〜6月を比べれば、1年間の変化が見える",
-    "同じ4〜6月どうしを比べるので、季節による差の影響を避けられる"
-  ], { x: M + 0.66, y: 2.35, w: 6.45, h: 2.6, color: "D6E4E6" });
-
-  const px = 8.35, pw = 4.35;
-  card(s, { x: px, y: 2.35, w: pw, h: 2.55, fill: "17383E", line: "27484E" });
-  const bys = [2.72, 3.92];
-  [["2025年4〜6月", "計画スタート直後"], ["2026年4〜6月", "1年経過時点"]].forEach((t, i) => {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: px + 0.42, y: bys[i], w: pw - 0.84, h: 0.72, rectRadius: 0.05,
-      fill: { color: "0C2E33" }, line: { color: "3A5C61", width: 1 }
-    });
-    s.addText(t[0], {
-      isTextBox: true, x: px + 0.42, y: bys[i] + 0.08, w: pw - 0.84, h: 0.32, margin: 0,
-      align: "center", fontFace: F, fontSize: 14, bold: true, color: WHITE
-    });
-    s.addText(t[1], {
-      isTextBox: true, x: px + 0.42, y: bys[i] + 0.4, w: pw - 0.84, h: 0.26, margin: 0,
-      align: "center", fontFace: F, fontSize: 10.5, color: DMUT
-    });
-  });
-  s.addShape(pres.ShapeType.downArrow, {
-    x: px + pw / 2 - 0.13, y: 3.5, w: 0.26, h: 0.34, fill: { color: "D98A45" }, line: { color: "D98A45", width: 0 }
-  });
-  s.addText("この1年で何が変わったか", {
-    isTextBox: true, x: px, y: 4.98, w: pw, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 11.5, color: DMUT
-  });
-  s.addNotes("問いを声に出して読み上げる。そのうえで、なぜ同じ四半期どうしの比較にしたのかを一言添える（給与・賞与・年度替わりなど、月によって取引の量は変わるため）。\nここで比較設計に触れておくと、後半の解釈が軽くならない。");
-  foot(s, 5, true);
-}
-
-/* ================= SLIDE 6 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 6, role: "準 備", title: "準備 ── 入出金テーブルをDYNATREK上に作る",
-    lead: "調べ始める前に、「調べやすい形」を作るところから始めました。" });
-
-  bullets(s, [
-    "元のデータベースは項目が多く、そのままでは入出金の状況を追いにくい",
-    "DYNATREK上で、入出金に関する項目を集めたテーブルを作成した",
-    "以降の分析は、このテーブルに条件を指定するだけで行える"
-  ], { x: M, y: 2.15, w: 5.6, h: 2.6 });
-
-  s.addShape(pres.ShapeType.roundRect, {
-    x: M, y: 5.25, w: 5.6, h: 0.85, rectRadius: 0.06,
-    fill: { color: ORGL }, line: { color: ORGL, width: 0 }
-  });
-  s.addText("この土台を一度作れば、\n後から出た疑問は条件指定だけで答えられる", {
-    isTextBox: true, x: M + 0.25, y: 5.25, w: 5.1, h: 0.85, margin: 0,
-    valign: "middle", fontFace: F, fontSize: 12.5, bold: true, color: ORG, lineSpacing: 18
-  });
-
-  const lx = 6.75, lw = 2.55, rx2 = 10.15, rw2 = 2.55, dy = 2.35, dh = 3.4;
-  card(s, { x: lx, y: dy, w: lw, h: dh, fill: PANEL });
-  s.addText("元のデータ", {
-    isTextBox: true, x: lx, y: dy + 0.24, w: lw, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 12.5, bold: true, color: INK2
-  });
-  s.addText("項目が多く、入出金の\n状況を追いにくい", {
-    isTextBox: true, x: lx + 0.15, y: dy + 0.58, w: lw - 0.3, h: 0.55, margin: 0,
-    align: "center", fontFace: F, fontSize: 10.5, color: MUTED, lineSpacing: 15
-  });
-  for (let r = 0; r < 6; r++) for (let c = 0; c < 3; c++) {
-    s.addShape(pres.ShapeType.rect, {
-      x: lx + 0.28 + c * 0.68, y: dy + 1.25 + r * 0.3, w: 0.56, h: 0.19,
-      fill: { color: "D9E1DF" }, line: { color: "D9E1DF", width: 0 }
-    });
-  }
-  arrow(s, lx + lw + 0.16, dy + dh / 2 - 0.13, 0.52, TEAL);
-  s.addText("必要な項目\nを集める", {
-    isTextBox: true, x: 9.28, y: 3.42, w: 0.88, h: 0.44, margin: 0,
-    align: "center", fontFace: F, fontSize: 8.5, color: TEAL, lineSpacing: 12
-  });
-
-  card(s, { x: rx2, y: dy, w: rw2, h: dh, fill: TEALL, line: "BBD5D7" });
-  s.addText("入出金テーブル", {
-    isTextBox: true, x: rx2, y: dy + 0.24, w: rw2, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 12.5, bold: true, color: TEAL
-  });
-  s.addText("DYNATREK上に作成", {
-    isTextBox: true, x: rx2, y: dy + 0.56, w: rw2, h: 0.28, margin: 0,
-    align: "center", fontFace: F, fontSize: 10.5, color: TEAL
-  });
-  ["日　付", "チャネル", "取引種別", "年　代"].forEach((t, i) => {
-    s.addShape(pres.ShapeType.rect, {
-      x: rx2 + 0.28, y: dy + 1.05 + i * 0.5, w: rw2 - 0.56, h: 0.36,
-      fill: { color: WHITE }, line: { color: "C6DCDE", width: 1 }
-    });
-    s.addText(t, {
-      isTextBox: true, x: rx2 + 0.28, y: dy + 1.05 + i * 0.5, w: rw2 - 0.56, h: 0.36, margin: 0,
-      align: "center", valign: "middle", fontFace: F, fontSize: 11.5, color: INK2
-    });
-  });
-  s.addText("※ 項目名は実際に使ったものに\n　 差し替えてください", {
-    isTextBox: true, x: rx2, y: dy + 3.05, w: rw2, h: 0.4, margin: 0,
-    align: "center", fontFace: F, fontSize: 9, color: MUTED, lineSpacing: 13
-  });
-  s.addNotes("見た目は地味だが、この発表で一番効いている場所だと明言する。\n「一度この土台を作ってしまえば、後から出てきた疑問は、すべて条件を指定するだけで答えられるようになりました」\n※S13の締めで回収する伏線なので、ここは急がずに置く。");
-  foot(s, 6, false);
-}
-
-/* ================= SLIDE 7 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 7, role: "実 際 の 画 面", title: "条件を指定する。グラフが出る。",
-    lead: "実際の画面です。やっていることは、これだけです。" });
-
-  const fw = 5.35, fy = 2.2, fh = 3.5;
-  const fx1 = M, fx2 = 13.33 - M - fw;
-  frame(s, { x: fx1, y: fy, w: fw, h: fh, label: "スクリーンショット①", sub: "条件設定画面\n（期間・チャネル・取引種別を指定）" });
-  frame(s, { x: fx2, y: fy, w: fw, h: fh, label: "スクリーンショット②", sub: "出力されたグラフ\n（指定した条件で集計された結果）", tint: TEALL, border: "BBD5D7" });
-  s.addShape(pres.ShapeType.rightArrow, {
-    x: fx1 + fw + 0.28, y: fy + fh / 2 - 0.2, w: 0.7, h: 0.4,
-    fill: { color: TEAL }, line: { color: TEAL, width: 0 }
-  });
-  s.addText("条件を指定すると", {
-    isTextBox: true, x: fx1, y: fy + fh + 0.16, w: fw, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 12.5, bold: true, color: INK2
-  });
-  s.addText("そのまま結果が出てくる", {
-    isTextBox: true, x: fx2, y: fy + fh + 0.16, w: fw, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 12.5, bold: true, color: TEAL
-  });
-  s.addText("注釈の吹き出しは多くても2つまで。操作手順は追わない。", {
-    isTextBox: true, x: M, y: 6.5, w: W, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 10, color: "B7C2C1"
-  });
-  s.addNotes("1分以内で切り上げる。「左で条件を指定すると、右がそのまま出てきます」だけで足りる。操作手順を追わない。\n次の1枚から結果が始まる、と予告して抜ける。\n※「SQLは書いていません」は、実際に書いていない場合のみ使う。\n※スライド上の注意書き（グレーの1行）は、貼り込みが終わったら削除すること。");
-  foot(s, 7, false);
-}
-
-/* ================= SLIDE 8 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 8, role: "確 認 ①", title: "IBの利用件数は増えていた",
-    lead: "1年間で、IBで行われた取引の件数はこう変わりました。" });
-
-  const lx = M, lw = 4.6;
-  label(s, "対象：IBで行われた取引", { x: lx, y: 2.2, w: lw, h: 0.28 });
-  s.addText("2025年4〜6月", { isTextBox: true, x: lx, y: 2.68, w: lw, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: MUTED });
-  s.addText("◯◯件", { isTextBox: true, x: lx, y: 2.98, w: lw, h: 0.6, margin: 0, fontFace: F, fontSize: 30, bold: true, color: INK2 });
-  s.addShape(pres.ShapeType.downArrow, { x: lx + 0.35, y: 3.68, w: 0.28, h: 0.38, fill: { color: "C3CECC" }, line: { color: "C3CECC", width: 0 } });
-  s.addText("2026年4〜6月", { isTextBox: true, x: lx, y: 4.16, w: lw, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: MUTED });
-  s.addText("◯◯件", { isTextBox: true, x: lx, y: 4.46, w: lw, h: 0.6, margin: 0, fontFace: F, fontSize: 30, bold: true, color: TEAL });
-
-  s.addShape(pres.ShapeType.roundRect, {
-    x: lx, y: 5.28, w: lw, h: 0.82, rectRadius: 0.06, fill: { color: TEALL }, line: { color: TEALL, width: 0 }
-  });
-  s.addText("＋◯◯％", {
-    isTextBox: true, x: lx, y: 5.28, w: lw, h: 0.82, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 24, bold: true, color: TEAL
-  });
-
-  frame(s, { x: 6.15, y: 2.2, w: 6.56, h: 3.9, label: "グラフ貼付エリア",
-    sub: "IB利用件数の2期間比較（棒グラフ）\n※ここで決めた軸・単位・色ルールを\nスライド10・11でもそのまま使うこと" });
-  s.addText("※ ◯◯ は実測値に差し替えてください", {
-    isTextBox: true, x: 6.15, y: 6.25, w: 6.56, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 10, color: "B7C2C1"
-  });
-  s.addNotes("数字を読み上げ、増えていることを確認する。そして必ず引きを作る。\n「増えています。……ここで発表を終えてもいいのですが、私はこの時点で、ひとつ引っかかりました」\n※ここが発表全体で一番の転換点。間を置いて次へ。");
-  foot(s, 8, false);
-}
-
-/* ================= SLIDE 9 ================= */
-{
-  const s = pres.addSlide(); bg(s, true);
-  header(s, { num: 9, role: "問 い ②", title: "増えた。では「普及した」と言えるか？",
-    lead: "件数が増えたことと、IBに置き換わったことは、同じではありません。", dark: true, color: "D98A45", titleSize: 30 });
-
-  bullets(s, [
-    "IBの件数が増えても、ATMでの取引がそのまま残っていれば「増えただけ」",
-    "「置き換わっている」と言うには、ATM側が減っているかも見る必要がある",
-    "そこで、ATMで行われている取引のうち、IBでも同じことができる取引（振込・振替など）を数えた"
-  ], { x: M + 0.66, y: 2.35, w: 6.15, h: 2.7, color: "D6E4E6" });
-
-  const px = 7.9, pw = 4.8;
-  card(s, { x: px, y: 2.35, w: pw, h: 3.1, fill: "17383E", line: "27484E" });
-  const cw2 = 1.75;
-  const cols = [[px + 0.45, "ATM", "IBでも行える取引\n（振込・振替 など）", "3A5C61"], [px + pw - 0.45 - cw2, "IB", "インターネット\nバンキング", "D98A45"]];
-  cols.forEach(c => {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: c[0], y: 2.78, w: cw2, h: 1.55, rectRadius: 0.06,
-      fill: { color: "0C2E33" }, line: { color: c[3], width: 1.25 }
-    });
-    s.addText(c[1], {
-      isTextBox: true, x: c[0], y: 2.94, w: cw2, h: 0.36, margin: 0,
-      align: "center", fontFace: F, fontSize: 15, bold: true, color: WHITE
-    });
-    s.addText(c[2], {
-      isTextBox: true, x: c[0] + 0.08, y: 3.34, w: cw2 - 0.16, h: 0.8, margin: 0,
-      align: "center", fontFace: F, fontSize: 9.5, color: DMUT, lineSpacing: 14
-    });
-  });
-  arrow(s, px + 0.45 + cw2 + 0.12, 3.42, 0.66, "D98A45");
-  s.addText("置き換わっているなら、\nATM側は減っているはず", {
-    isTextBox: true, x: px + 0.3, y: 4.5, w: pw - 0.6, h: 0.7, margin: 0,
-    align: "center", fontFace: F, fontSize: 12, bold: true, color: "D98A45", lineSpacing: 18
-  });
-  s.addText("※ これは考え方の図です。結果ではありません。", {
-    isTextBox: true, x: px, y: 5.52, w: pw, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 10, color: DMUT
-  });
-  s.addNotes("思いつき自体は特別ではない、と正直に言うほうが強い。\n「比較対象を置こう、という発想自体は普通のことだと思います。大きかったのは、思いついたときにすぐ試せたことでした。新しくデータをもらう必要も、誰かに依頼する必要もなく、条件を変えるだけでした」\n※この図は概念図であって結果ではない、と口頭でも明示する。");
-  foot(s, 9, true);
-}
-
-/* ================= SLIDE 10 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 10, role: "確 認 ②", title: "ATM側は減っていた",
-    lead: "IBでもできる取引に絞ってATMを見ると、逆向きに動いていました。" });
-
-  frame(s, { x: M, y: 2.2, w: 6.56, h: 3.9, label: "グラフ貼付エリア",
-    sub: "ATMのIB代替可能取引 件数の2期間比較\n※スライド8と同じ軸・単位・棒の太さで、\n色だけ減少方向に変える" });
-
-  const rx = 7.55, rw = 5.16;
-  label(s, "対象：ATMでの取引のうち、IBでも行えるもの", { x: rx, y: 2.2, w: rw, h: 0.28 });
-  s.addText("振込 ／ 振替 　など", {
-    isTextBox: true, x: rx, y: 2.5, w: rw, h: 0.3, margin: 0,
-    fontFace: F, fontSize: 12.5, bold: true, color: INK2
-  });
-  s.addText("2025年4〜6月", { isTextBox: true, x: rx, y: 3.02, w: rw, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: MUTED });
-  s.addText("◯◯件", { isTextBox: true, x: rx, y: 3.32, w: rw, h: 0.6, margin: 0, fontFace: F, fontSize: 30, bold: true, color: INK2 });
-  s.addShape(pres.ShapeType.downArrow, { x: rx + 0.35, y: 4.02, w: 0.28, h: 0.38, fill: { color: "C3CECC" }, line: { color: "C3CECC", width: 0 } });
-  s.addText("2026年4〜6月", { isTextBox: true, x: rx, y: 4.5, w: rw, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: MUTED });
-  s.addText("◯◯件", { isTextBox: true, x: rx, y: 4.8, w: rw, h: 0.6, margin: 0, fontFace: F, fontSize: 30, bold: true, color: ORG });
-  s.addShape(pres.ShapeType.roundRect, {
-    x: rx, y: 5.55, w: rw, h: 0.72, rectRadius: 0.06, fill: { color: ORGL }, line: { color: ORGL, width: 0 }
-  });
-  s.addText("−◯◯％", {
-    isTextBox: true, x: rx, y: 5.55, w: rw, h: 0.72, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 22, bold: true, color: ORG
-  });
-  s.addNotes("結果を読み上げる。ここでは解釈をまだ言わない。\n「では、この2つを並べてみます」で次へ渡すと、次の1枚が効く。\n※「IBでも行える取引」に何を含めたかは口頭でも一度言っておく。質疑でほぼ確実に聞かれる。");
-  foot(s, 10, false);
-}
-
-/* ================= SLIDE 11 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 11, role: "解 釈", title: "2つを並べると、見えること",
-    lead: "片方だけでは言えなかったことが、2つ並べると言えるようになります。" });
-
-  const gw = 5.72, gy = 2.15, gh = 2.55;
-  const gx1 = M, gx2 = 13.33 - M - gw;
-  frame(s, { x: gx1, y: gy, w: gw, h: gh, label: "スライド8のグラフを再掲", tint: TEALL, border: "BBD5D7" });
-  frame(s, { x: gx2, y: gy, w: gw, h: gh, label: "スライド10のグラフを再掲", tint: ORGL, border: "E4C8AC", fg: ORG });
-
-  s.addText("IB　▲ 増加", {
-    isTextBox: true, x: gx1, y: gy + gh + 0.14, w: gw, h: 0.36, margin: 0,
-    align: "center", fontFace: F, fontSize: 15, bold: true, color: TEAL
-  });
-  s.addText("ATM（IBでも可能な取引）　▼ 減少", {
-    isTextBox: true, x: gx2, y: gy + gh + 0.14, w: gw, h: 0.36, margin: 0,
-    align: "center", fontFace: F, fontSize: 15, bold: true, color: ORG
-  });
-
-  s.addShape(pres.ShapeType.roundRect, {
-    x: M, y: 5.28, w: W, h: 0.86, rectRadius: 0.06, fill: { color: PANEL }, line: { color: PANEL, width: 0 }
-  });
-  s.addText("同じ期間・同じデータで逆方向に動いている　→　「増えた」ではなく「置き換わりつつある」と読める", {
-    isTextBox: true, x: M + 0.3, y: 5.28, w: W - 0.6, h: 0.86, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 15, bold: true, color: INK
-  });
-  s.addText("ただし件数は取引全体の増減にも影響されるため、断定ではなく傾向として捉えている", {
-    isTextBox: true, x: M, y: 6.3, w: W, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 11.5, color: MUTED
-  });
-  s.addNotes("「ひとつの数字だけを見ていると、都合よく読めてしまいます。比較対象を置くと、言えることの範囲が変わります」\n※ここは学びに寄りすぎず1文で止める。学びの掘り下げは後続パートの担当。\n※最後の但し書きも、逃げではなく“どこまで言えるかを自分で線引きした”という姿勢として、はっきり口に出す。");
-  foot(s, 11, false);
-}
-
-/* ================= SLIDE 12 ================= */
-{
-  const s = pres.addSlide(); bg(s, false);
-  header(s, { num: 12, role: "問 い ③　→　確 認 ③", title: "では、どの年代で進んでいるのか",
-    lead: "全体が動いているなら、次に気になるのは「誰が」です。", color: ORG });
-
-  bullets(s, [
-    "同じテーブルに「年代」の条件を加えるだけで確認できた",
-    "新しいデータの準備も、誰かへの依頼も発生していない"
-  ], { x: M, y: 2.2, w: 5.1, h: 1.3 });
-
-  s.addShape(pres.ShapeType.roundRect, {
-    x: M, y: 3.62, w: 5.1, h: 0.78, rectRadius: 0.06, fill: { color: ORGL }, line: { color: ORGL, width: 0 }
-  });
-  s.addText("結果：◯代で特に◯◯", {
-    isTextBox: true, x: M, y: 3.62, w: 5.1, h: 0.78, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 17, bold: true, color: ORG
-  });
-
-  frame(s, { x: M, y: 4.62, w: 5.1, h: 1.5, label: "スクリーンショット③（任意）",
-    sub: "条件設定画面の「年代」部分だけを切り出す\n──「条件を1つ足しただけ」が絵で伝わる", size: 11.5 });
-
-  frame(s, { x: 6.35, y: 2.2, w: 6.36, h: 3.92, label: "グラフ貼付エリア",
-    sub: "年代別の増減（横軸に年代をとった棒グラフ）\n※IB側・ATM側のどちらを見た結果かを必ず明記" });
-  s.addText("※ 結果の記述は実際に出た内容に差し替えてください", {
-    isTextBox: true, x: 6.35, y: 6.25, w: 6.36, h: 0.3, margin: 0,
-    align: "center", fontFace: F, fontSize: 10, color: "B7C2C1"
-  });
-  s.addNotes("「ここまで、新しいデータの準備も、誰かへの依頼も発生していません。条件を1つ足しただけです」\n※3周目にしてこの台詞が出ると、スライド3で予告した「全部これの繰り返しです」がきれいに回収される。\n※結果の中身そのものより、たどり着く速さを強調する。");
-  foot(s, 12, false);
-}
-
-/* ================= SLIDE 13 ================= */
-{
-  const s = pres.addSlide(); bg(s, true);
-  header(s, { num: 13, role: "ま と め", title: "今回できたこと",
-    lead: "特別なことはしていません。浮かんだ疑問を、その場で確かめ続けただけです。", dark: true, color: "5FB6BC" });
-
-  const cw = 3.66, gap = 0.555, cy = 2.3, ch = 2.45;
-  const cx = [M, M + cw + gap, M + (cw + gap) * 2];
-  const loops = [
-    ["IBの利用は、本当に\n広がっているのか？", "IB利用件数を2期間で比較\n→ 増えていた"],
-    ["増えた。でも\n「置き換わった」のか？", "ATMのIB代替可能取引を比較\n→ 減っていた"],
-    ["では、どの年代で\n進んでいるのか？", "年代の条件を足すだけで\n確認できた"]
+  const lw=6.9, ys=[2.05,3.10,4.15];
+  const rows=[
+    ["計 画","あいちフィナンシャルグループ　第2次中期経営計画（2025年4月〜2028年3月）",0],
+    ["基本戦略","Ⅲ「DX戦略の加速化」",0.35],
+    ["重点施策","⑦　〔　計画本文の表現を記入　〕",0.70]
   ];
-  loops.forEach((lp, i) => {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: cx[i], y: cy, w: cw, h: ch, rectRadius: 0.05,
-      fill: { color: "17383E" }, line: { color: "27484E", width: 1 }
-    });
-    s.addText("問 い " + "①②③"[i], {
-      isTextBox: true, x: cx[i] + 0.28, y: cy + 0.2, w: cw - 0.56, h: 0.26, margin: 0,
-      fontFace: F, fontSize: 10.5, bold: true, color: "D98A45", charSpacing: 1.2
-    });
-    s.addText(lp[0], {
-      isTextBox: true, x: cx[i] + 0.28, y: cy + 0.5, w: cw - 0.56, h: 0.72, margin: 0,
-      fontFace: F, fontSize: 13.5, bold: true, color: WHITE, lineSpacing: 20
-    });
-    s.addShape(pres.ShapeType.rect, {
-      x: cx[i] + 0.28, y: cy + 1.32, w: cw - 0.56, h: 0.012,
-      fill: { color: "3A5C61" }, line: { color: "3A5C61", width: 0 }
-    });
-    s.addText("確 認 " + "①②③"[i], {
-      isTextBox: true, x: cx[i] + 0.28, y: cy + 1.44, w: cw - 0.56, h: 0.26, margin: 0,
-      fontFace: F, fontSize: 10.5, bold: true, color: "5FB6BC", charSpacing: 1.2
-    });
-    s.addText(lp[1], {
-      isTextBox: true, x: cx[i] + 0.28, y: cy + 1.72, w: cw - 0.56, h: 0.6, margin: 0,
-      fontFace: F, fontSize: 12, color: "D6E4E6", lineSpacing: 17
-    });
-    if (i < 2) arrow(s, cx[i] + cw + 0.12, cy + ch / 2 - 0.13, 0.31, "43666C");
+  rows.forEach((r,i)=>{
+    const x=M+r[2], w=lw-r[2];
+    card(s,{x:x,y:ys[i],w:w,h:0.85,fill:i===2?ACCL:PANEL,line:i===2?"D9A97F":PANEL,lw:i===2?1.25:0.75});
+    txt(s,r[0],{x:x+0.28,y:ys[i]+0.13,w:1.6,h:0.24,fontSize:10,bold:true,
+      color:i===2?ACC:MUTED,charSpacing:1});
+    txt(s,r[1],{x:x+0.28,y:ys[i]+0.40,w:w-0.56,h:0.34,fontSize:13,bold:i===2,color:i===2?ACC:INK});
+    if(i<2) dArrow(s,M+r[2]+0.5,ys[i]+0.88,0.20);
   });
+  txt(s,"非対面チャネル（バンキングアプリ、インターネット支店 など）の有効活用",
+    {x:M+0.70,y:5.06,w:lw-0.70,h:0.32,fontSize:12,color:INK2});
 
-  s.addShape(pres.ShapeType.roundRect, {
-    x: M, y: 5.05, w: W, h: 0.72, rectRadius: 0.06,
-    fill: { color: "17383E" }, line: { color: "17383E", width: 0 }
+  const rx=7.95, rw=4.68;
+  card(s,{x:rx,y:2.05,w:rw,h:2.95,fill:PANEL});
+  txt(s,"非対面チャネル",{x:rx+0.3,y:2.25,w:rw-0.6,h:0.3,fontSize:12.5,bold:true,color:MUTED,charSpacing:1});
+  const items=[["バンキングアプリ",false],["インターネット支店",false],["インターネットバンキング（IB）",true]];
+  items.forEach((it,i)=>{
+    const y=2.68+i*0.72;
+    card(s,{x:rx+0.3,y:y,w:rw-0.6,h:0.6,fill:it[1]?PRI:WHITE,line:it[1]?PRI:LINE,lw:1});
+    txt(s,it[0],{x:rx+0.3,y:y,w:rw-0.6,h:0.6,align:"center",valign:"middle",
+      fontSize:it[1]?12.5:12,bold:it[1],color:it[1]?WHITE:INK2});
   });
-  s.addText("この3往復のために新しく準備したのは、入出金テーブル1つだけ　／　新しいデータの準備・依頼：なし", {
-    isTextBox: true, x: M, y: 5.05, w: W, h: 0.72, margin: 0,
-    align: "center", valign: "middle", fontFace: F, fontSize: 13, bold: true, color: "5FB6BC"
-  });
-  s.addText("DYNATREKの価値は「分析ができること」よりも、疑問を持ってから確かめるまでが短いことにある", {
-    isTextBox: true, x: M, y: 6.05, w: W, h: 0.4, margin: 0,
-    align: "center", fontFace: F, fontSize: 15, bold: true, color: WHITE
-  });
-  s.addNotes("「業務のなかで“ちょっと気になる”が生まれたときに、その場で確かめられる。それが今回いちばん実感した価値です」で締める。\nそのうえで「ここからは、この取り組みを通じて私自身が学んだこと、苦労したことをお話しします」と後続パートへ橋渡しする。\n\n※この1枚に「今後の展望」は書かない。分析の続きは行えないので、将来の話をすると空手形になる。目標・達成度・課題はすべて後続パートの担当。");
-  foot(s, 13, true);
+  txt(s,"↑　今回の分析対象",{x:rx,y:5.06,w:rw,h:0.3,align:"center",fontSize:11.5,bold:true,color:PRI});
+
+  band(s,{y:5.72,text:"非対面チャネルがどれだけ使われるようになったかは、計画の狙いがどこまで進んでいるかを示す手がかりになる"});
+
+  s.addNotes("あいちフィナンシャルグループの第2次中期経営計画では、基本戦略のひとつに「DX戦略の加速化」が掲げられ、その重点施策として、バンキングアプリやインターネット支店といった非対面チャネルの有効活用が挙げられています。\nその非対面チャネルのひとつがインターネットバンキング、IBです。\n\n【作成時の注意】重点施策の番号（⑦）と本文の表現は、計画の原本で確認してから記入すること。番号が確認できない場合は「重点施策のひとつ」と書けば事実関係は崩れない。\n※KPIの数値には触れない（今回はKPIに沿った分析をしていないため）。");
 }
 
-pres.writeFile({ fileName: "/tmp/claude-0/-home-user-my-website/9d2b3804-e19b-5dbd-a9cd-4f44a2f53f65/scratchpad/DYNATREK_成果発表.pptx" })
-  .then(f => console.log("wrote", f));
+/* ===================== 03 目的 ===================== */
+{
+  const s = slide(3,"目 的","IBの利用がどれだけ増えたかを、データで確かめる",
+    "背景をふまえて、今回の分析の目的を次のように置きました。");
+
+  card(s,{x:M,y:2.1,w:W,h:1.55,fill:PRIL});
+  txt(s,"目 的",{x:M+0.45,y:2.32,w:2,h:0.26,fontSize:10.5,bold:true,color:PRI,charSpacing:1.5});
+  txt(s,"2025年と2026年の同じ時期を比べ、IBの利用件数がどれだけ増えたかを確認する",
+    {x:M+0.45,y:2.68,w:W-0.9,h:0.6,fontSize:19,bold:true,color:PRI});
+
+  const cw=(W-0.5)/2, cy=4.05, ch=1.75;
+  const subs=[
+    ["比べ方","同じ4〜6月どうしを比べることで、時期による取引量の差の影響を避ける"],
+    ["見る対象","IBの件数だけでなく、ATMで行われている「IBでも代替できる取引」も合わせて見る"]
+  ];
+  subs.forEach((c,i)=>{
+    const x=M+i*(cw+0.5);
+    card(s,{x:x,y:cy,w:cw,h:ch,fill:PANEL});
+    txt(s,c[0],{x:x+0.35,y:cy+0.25,w:cw-0.7,h:0.26,fontSize:10.5,bold:true,color:MUTED,charSpacing:1});
+    txt(s,c[1],{x:x+0.35,y:cy+0.62,w:cw-0.7,h:0.9,fontSize:13.5,color:INK,lineSpacing:22});
+  });
+
+  s.addNotes("背景をふまえて、目的はシンプルに置きました。2025年と2026年の同じ時期を比べて、IBの利用件数がどれだけ増えたかを確認することです。\n比べ方は、同じ4〜6月どうし。時期によって取引の量は変わるので、同じ季節どうしで比べます。\nもうひとつ、IBの件数だけを見るのではなく、ATMで行われている「IBでもできる取引」も合わせて見ることにしました。理由は結果のところで説明します。");
+}
+
+/* ===================== 04 使用したデータ ===================== */
+{
+  const s = slide(4,"使 用 し た デ ー タ","取引履歴（流動）から入出金テーブルを作成した",
+    "分析に使ったデータと、DYNATREKで扱えるようにするまでの準備です。");
+
+  const cw=3.55, gp=0.64, fy=2.05, fh=1.62;
+  const xs=[M, M+cw+gp, M+(cw+gp)*2];
+  const flow=[
+    ["元データ","取引履歴（流動）",PANEL,INK],
+    ["作成したもの","入出金テーブル",PANEL,INK],
+    ["分析","DYNATREKで\n条件を指定して集計",PRIL,PRI]
+  ];
+  flow.forEach((f,i)=>{
+    card(s,{x:xs[i],y:fy,w:cw,h:fh,fill:f[2]});
+    txt(s,f[0],{x:xs[i],y:fy+0.28,w:cw,h:0.26,align:"center",fontSize:10.5,bold:true,
+      color:i===2?PRI:MUTED,charSpacing:1});
+    txt(s,f[1],{x:xs[i]+0.2,y:fy+0.68,w:cw-0.4,h:0.7,align:"center",fontSize:15,bold:true,
+      color:f[3],lineSpacing:22});
+    if(i<2) rArrow(s,xs[i]+cw+0.18,fy+fh/2-0.12,0.28);
+  });
+
+  card(s,{x:M,y:4.05,w:W,h:1.2,fill:PANEL});
+  txt(s,"対 象 期 間",{x:M+0.4,y:4.28,w:1.8,h:0.26,fontSize:10.5,bold:true,color:MUTED,charSpacing:1});
+  [["2025年　4月・5月・6月",3.35],["2026年　4月・5月・6月",7.65]].forEach(p=>{
+    card(s,{x:p[1],y:4.28,w:3.9,h:0.72,fill:WHITE,line:LINE,lw:1});
+    txt(s,p[0],{x:p[1],y:4.28,w:3.9,h:0.72,align:"center",valign:"middle",fontSize:14,bold:true,color:INK});
+  });
+
+  blank(s,{x:M,y:5.6,w:W,h:1.0,label:"記 入 欄",
+    hint:"入出金テーブルに持たせた主な項目（例：日付／チャネル／取引種別／年代 など、実際に使ったものを記載）"});
+
+  s.addNotes("使ったデータは、2025年と2026年の4月・5月・6月です。\n元になったのは取引履歴（流動）で、そこから入出金テーブルを作成し、DYNATREKで条件を指定して集計できる形にしました。\n取引履歴そのままだと項目が多く目的のデータを追いにくいので、この準備が必要でした。逆に、一度この形にしてしまえば、以降は条件を指定するだけで色々な角度から見られるようになります。");
+}
+
+/* ===================== 05 結果① IB ===================== */
+{
+  const s = slide(5,"結 果 ①","IBの利用件数は増えていた",
+    "まず、IBで行われた取引の件数を、2つの期間で比べました。");
+
+  chartBox(s,{x:M,y:2.05,w:6.55,h:3.5,label:"グラフ貼付エリア",
+    sub:"IBの利用件数（2025年4〜6月 / 2026年4〜6月）"});
+
+  const rx=7.62, rw=5.01;
+  blank(s,{x:rx,y:2.05,w:rw,h:1.05,label:"件 数",
+    hint:"2025年4〜6月 合計 ◯◯件 → 2026年4〜6月 合計 ◯◯件"});
+  blank(s,{x:rx,y:3.28,w:rw,h:1.05,label:"変 化",
+    hint:"1年間で ＋◯◯件（＋◯◯％）"});
+  blank(s,{x:rx,y:4.51,w:rw,h:1.04,label:"月 別 の 傾 向",
+    hint:"4月・5月・6月それぞれ増えているか／特に伸びた月はどこか"});
+
+  band(s,{y:5.85,h:0.68,text:"IBの利用件数は、1年間で増加していた"});
+
+  s.addNotes("まずIBの利用件数です。2025年の4〜6月と、2026年の4〜6月を比べました。\n（記入した数値を読み上げる）\n1年間で件数は増えています。月別に見ても、同じ傾向が出ています。\n──ただ、これだけで「IBが広がった」と言い切れるかというと、そうではありません。次のスライドで、もうひとつの見方を足します。");
+}
+
+/* ===================== 06 結果② ATM ===================== */
+{
+  const s = slide(6,"結 果 ②","ATMのうち、IBでもできる取引は減っていた",
+    "件数が増えた理由が「取引全体の増加」ではないことを確かめるため、ATM側も見ました。");
+
+  chartBox(s,{x:M,y:2.05,w:6.55,h:3.5,label:"グラフ貼付エリア",
+    sub:"ATMでのIB代替可能な取引の件数（2025年4〜6月 / 2026年4〜6月）"});
+
+  const rx=7.62, rw=5.01;
+  card(s,{x:rx,y:2.05,w:rw,h:1.05,fill:PANEL});
+  txt(s,"対 象",{x:rx+0.28,y:2.20,w:2,h:0.24,fontSize:10,bold:true,color:MUTED,charSpacing:1});
+  txt(s,"ATMでの取引のうち、IBでも行えるもの\n（振込・振替 など）",
+    {x:rx+0.28,y:2.46,w:rw-0.56,h:0.55,fontSize:12,color:INK,lineSpacing:17});
+  blank(s,{x:rx,y:3.28,w:rw,h:1.05,label:"件 数",
+    hint:"2025年4〜6月 合計 ◯◯件 → 2026年4〜6月 合計 ◯◯件"});
+  blank(s,{x:rx,y:4.51,w:rw,h:1.04,label:"変 化",
+    hint:"1年間で −◯◯件（−◯◯％）"});
+
+  band(s,{y:5.85,h:0.68,text:"IBは増え、ATM側は減っている　→　同じ取引がIBへ移りつつあると読める"});
+
+  s.addNotes("IBの件数が増えても、それが「取引そのものが増えただけ」なら、IBが広がったとは言えません。\nそこで、ATMで行われている取引のうち、IBでも同じことができるもの──振込や振替など──に絞って件数を見ました。\n（記入した数値を読み上げる）\nこちらは減っています。IBが増え、ATM側が減っている。同じ取引がIBへ移りつつある、と読めます。\n\n※「IBでも行える取引」に何を含めたかは質疑で聞かれやすいので、口頭でも一度言っておく。");
+}
+
+/* ===================== 07 深掘り ===================== */
+{
+  const s = slide(7,"深 掘 り","では、どの年代でIBの利用が増えたのか",
+    "「増えた」の次に知りたくなるのは「誰が使うようになったのか」です。今回は年代を5つに分けて調べました。");
+
+  const gw=2.18, gp=0.25;
+  const ages=[["未成年","0〜17歳"],["若手成人","18〜29歳"],["働き手①","30〜44歳"],["働き手②","45〜64歳"],["高齢者","65歳以上"]];
+  ages.forEach((a,i)=>{
+    const x=M+i*(gw+gp);
+    card(s,{x:x,y:2.0,w:gw,h:0.78,fill:PANEL});
+    txt(s,a[0],{x:x,y:2.12,w:gw,h:0.28,align:"center",fontSize:12.5,bold:true,color:INK});
+    txt(s,a[1],{x:x,y:2.42,w:gw,h:0.26,align:"center",fontSize:11,color:MUTED});
+  });
+
+  chartBox(s,{x:M,y:3.05,w:6.55,h:2.6,label:"グラフ貼付エリア",
+    sub:"年代別 IB利用件数の増加率（棒グラフ）"});
+
+  const rx=7.62, rw=5.01;
+  blank(s,{x:rx,y:3.05,w:rw,h:0.88,label:"読 み 取 り",
+    hint:"どの年代の増加率が最も高かったか／他の年代はどうだったか"});
+
+  card(s,{x:rx,y:4.10,w:rw,h:1.55,fill:PRIL});
+  txt(s,"次 に 考 え ら れ る 施 策",{x:rx+0.28,y:4.25,w:rw-0.56,h:0.26,fontSize:10.5,bold:true,color:PRI,charSpacing:1});
+  s.addText([
+    {text:"伸びが小さい年代には、ATMでの振込・振替の際にIBを案内する",options:{bullet:true,breakLine:true}},
+    {text:"すでに伸びている年代には、扱える手続きの幅を広げる",options:{bullet:true}}
+  ],{isTextBox:true,x:rx+0.28,y:4.53,w:rw-0.56,h:1.05,margin:0,fontFace:F,fontSize:11.5,
+     color:PRI,lineSpacing:16,paraSpaceAfter:6});
+
+  band(s,{y:5.9,h:0.66,fill:PANEL,color:INK,
+    text:"年代まで分かると、「誰に、どう案内するか」という具体的な打ち手まで考えられる"});
+
+  s.addNotes("IBが増えていることが分かると、銀行側が次に知りたくなるのは「では、どの年代で増えているのか」です。これも同じテーブルに年代の条件を足すだけで確認できました。\n年代は5つに分けています。未成年、若手成人、働き手①、働き手②、高齢者です。\n（読み取りを説明する）\nここまで分かると、伸びていない年代にどう案内するか、といった具体的な打ち手の話ができるようになります。\n\n【作成時の注意】施策の2行は、実際の読み取りに合わせて書き換えること。");
+}
+
+/* ===================== 08 まとめ ===================== */
+{
+  const s = slide(8,"ま と め","データを「次の一手」に変えるまで",
+    "今回のワークで行ったことを、ひとつの流れにまとめます。");
+
+  const cw=2.11, gp=0.34, cy=2.15, ch=2.45;
+  const steps=[
+    ["問 う","預金やIBの動きを\n知りたい"],
+    ["整 え る","取引履歴（流動）から\n入出金テーブルを作成"],
+    ["確 か め る","IBは増加\nATM側は減少"],
+    ["深 掘 る","年代別に\n増加率を確認"],
+    ["次 の 一 手","案内すべき年代と\n方法を検討"]
+  ];
+  steps.forEach((st,i)=>{
+    const x=M+i*(cw+gp), last=i===4;
+    card(s,{x:x,y:cy,w:cw,h:ch,fill:last?PRI:PANEL});
+    txt(s,String(i+1),{x:x,y:cy+0.28,w:cw,h:0.34,align:"center",fontSize:16,bold:true,
+      color:last?"9CC8CF":"B9C7CC"});
+    txt(s,st[0],{x:x,y:cy+0.78,w:cw,h:0.3,align:"center",fontSize:13,bold:true,
+      color:last?WHITE:INK,charSpacing:0.8});
+    txt(s,st[1],{x:x+0.12,y:cy+1.22,w:cw-0.24,h:0.9,align:"center",fontSize:11.5,
+      color:last?"D6E8EB":INK2,lineSpacing:17});
+    if(i<4) rArrow(s,x+cw+0.05,cy+ch/2-0.12,0.24);
+  });
+
+  band(s,{y:5.05,h:0.95,
+    text:"行内にあるデータも、条件を指定して見られる形に整えれば、業務上の問いに答え、次の施策を考える材料になる",size:15});
+  txt(s,"今回のワークで学んだのは、この一連のプロセスです",
+    {x:M,y:6.22,w:W,h:0.32,align:"center",fontSize:12.5,color:MUTED});
+
+  s.addNotes("最後に、今回の流れをまとめます。\n「預金やIBの動きを知りたい」という問いから始まり、取引履歴（流動）から入出金テーブルを整え、IBが増えATM側が減っていることを確かめ、さらに年代別まで深掘りして、最後は誰にどう案内するかという打ち手の検討まで進みました。\n行内にあるデータも、条件を指定して見られる形に整えれば、業務上の問いに答えて、次の施策を考える材料になります。今回のワークで学んだのは、この一連のプロセスです。");
+}
+
+pres.writeFile({fileName:"/tmp/claude-0/-home-user-my-website/9d2b3804-e19b-5dbd-a9cd-4f44a2f53f65/scratchpad/DYNATREK_成果発表.pptx"})
+  .then(f=>console.log("wrote",f));
